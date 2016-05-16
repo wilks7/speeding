@@ -193,6 +193,11 @@
 				TargetAttributes = {
 					177085941CEA4B9C00C189F8 = {
 						CreatedOnToolsVersion = 7.3.1;
+						SystemCapabilities = {
+							com.apple.BackgroundModes = {
+								enabled = 1;
+							};
+						};
 					};
 					177085A81CEA4B9C00C189F8 = {
 						CreatedOnToolsVersion = 7.3.1;
@@ -482,6 +487,7 @@
 				177085BF1CEA4B9C00C189F8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		177085C01CEA4B9C00C189F8 /* Build configuration list for PBXNativeTarget "speedingTests" */ = {
 			isa = XCConfigurationList;
@@ -490,6 +496,7 @@
 				177085C21CEA4B9C00C189F8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		177085C31CEA4B9C00C189F8 /* Build configuration list for PBXNativeTarget "speedingUITests" */ = {
 			isa = XCConfigurationList;
@@ -498,6 +505,7 @@
 				177085C51CEA4B9C00C189F8 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
