@@ -56,6 +56,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         super.viewDidLoad()
         buttonLabel.hidden = true
         //playButtonLabel.hidden = true
+        mphLabel.font = UIFont(name: "DBLCDTempBlack", size: 150.0)
         
         setupSession()
         checkLocation()
@@ -193,14 +194,19 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
         let current = newLocation
         let speed = current.speed*2.23694
-        let lng = current.coordinate.longitude
-        let lat = current.coordinate.latitude
+        let speedMph = Int(round(speed))
+        
         if speed <= 0 {
             mphLabel.text = "0"
         } else {
-            mphLabel.text = String(speed)
+            mphLabel.text = String(speedMph)
         }
-        let fullLog = "\(NSDate()) -- \(speed)"
+        
+        let formatter = NSDateFormatter()
+        formatter.dateFormat = "MM.dd.yyyy-hh:mm:ss"
+        let todayString = formatter.stringFromDate(NSDate())
+
+        let fullLog = "\(todayString) | \(speedMph) mph"
         logSpeed(fullLog)
     }
     
@@ -208,18 +214,11 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         let file = "log.txt"
         let text = "MPH LOG"
         
-            let path = getFileURL(file)
+        let path = getFileURL(file)
             
-            //writing
-            do {
-                try text.writeToURL(path, atomically: false, encoding: NSUTF8StringEncoding)
-            } catch {/* error handling here */}
-//            
-//            //reading
-//            do {
-//                let text2 = try NSString(contentsOfURL: path, encoding: NSUTF8StringEncoding)
-//            }
-//            catch {/* error handling here */}
+        do {
+            try text.writeToURL(path, atomically: false, encoding: NSUTF8StringEncoding)
+        } catch {"ERROR: creating log"}
     }
     
     func logSpeed(logString: String){
@@ -227,7 +226,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
             let url = getFileURL("log.txt")
             try logString.appendLineToURL(url)
         } catch {
-            print("ERROR: could not write to file")
+            print("ERROR: could not write to log file")
         }
     }
     
