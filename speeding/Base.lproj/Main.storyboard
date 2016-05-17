@@ -18,8 +18,8 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="45" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GeQ-M5-gpA">
-                                <rect key="frame" x="241" y="240" width="119" height="120"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="100"/>
+                                <rect key="frame" x="211" y="210" width="179" height="180"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="150"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -42,13 +42,13 @@
                                 </connections>
                             </button>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="mph" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6c9-Sh-sbM">
-                                <rect key="frame" x="375" y="319" width="41" height="24"/>
+                                <rect key="frame" x="405" y="349" width="41" height="24"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
                         </subviews>
-                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                        <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="n49-tI-7Ml" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="48S-nQ-OJR"/>
                             <constraint firstItem="6c9-Sh-sbM" firstAttribute="leading" secondItem="GeQ-M5-gpA" secondAttribute="trailing" constant="15" id="63c-qP-Urf"/>
@@ -63,6 +63,8 @@
                     <connections>
                         <outlet property="buttonLabel" destination="48m-LN-Z59" id="QvR-82-5Gv"/>
                         <outlet property="mphLabel" destination="GeQ-M5-gpA" id="sJ1-Qd-LKg"/>
+                        <outlet property="mphTextLabel" destination="6c9-Sh-sbM" id="Zeh-Cb-9FS"/>
+                        <outlet property="playButtonLabel" destination="n49-tI-7Ml" id="VIZ-hp-Jmg"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>

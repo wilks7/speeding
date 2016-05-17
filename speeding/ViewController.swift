@@ -19,28 +19,83 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     let fileName = "demo.m4a"
     
     @IBOutlet weak var mphLabel: UILabel!
+    @IBOutlet weak var mphTextLabel: UILabel!
     @IBOutlet weak var buttonLabel: UIButton!
+    @IBOutlet weak var playButtonLabel: UIButton!
     
     @IBAction func buttonPressed(sender: AnyObject) {
         if audioRecorder == nil {
             startRecording()
         }
         else {
-            mphLabel.textColor = UIColor.whiteColor()
             finishRecording(success: true)
         }
     }
     
     @IBAction func playButtonTapped(sender: AnyObject) {
-        playRecording()
+        //playRecording()
+        do {
+        let result = try String(contentsOfURL: getFileURL("log.txt"))
+            print(result)
+
+        } catch {
+            
+        }
     }
     
+    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+        if audioRecorder == nil {
+            startRecording()
+        }
+        else {
+            finishRecording(success: true)
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        buttonLabel.hidden = true
+        //playButtonLabel.hidden = true
+        
         setupSession()
+        checkLocation()
+        setupLocationManager()
     }//viewdidload
     
+    
+    var locationManger = CLLocationManager()
+    func setupLocationManager(){
+        locationManger.delegate = self
+        locationManger.distanceFilter = kCLDistanceFilterNone
+        locationManger.desiredAccuracy = kCLLocationAccuracyBest
+        locationManger.startUpdatingLocation()
+    }
+    
+    func checkLocation(){
+        switch CLLocationManager.authorizationStatus() {
+        case .AuthorizedAlways:
+            print("Authorized location for all")
+        case .NotDetermined:
+            locationManger.requestAlwaysAuthorization()
+        case .AuthorizedWhenInUse, .Restricted, .Denied:
+            let alertController = UIAlertController(
+                title: "Background Location Access Disabled",
+                message: "In order to be notified about adorable kittens near you, please open this app's settings and set location access to 'Always'.",
+                preferredStyle: .Alert)
+            
+            let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
+            alertController.addAction(cancelAction)
+            
+            let openAction = UIAlertAction(title: "Open Settings", style: .Default) { (action) in
+                if let url = NSURL(string:UIApplicationOpenSettingsURLString) {
+                    UIApplication.sharedApplication().openURL(url)
+                }
+            }
+            alertController.addAction(openAction)
+            
+            self.presentViewController(alertController, animated: true, completion: nil)
+        }
+    }
     
     // FUNCTIONS: - Audio Recording
     
@@ -67,7 +122,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     func startRecording() {
 
-        let audioUrl = getFileURL()
+        let audioUrl = getAudioURL()
         
         let maxSettings = [//filename should be .caf
             AVFormatIDKey: Int(kAudioFormatAppleLossless),
@@ -90,7 +145,9 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
             audioRecorder.record()
             
             mphLabel.textColor = UIColor.redColor()
+            mphTextLabel.textColor = UIColor.redColor()
             buttonLabel.setTitle("STOP", forState: .Normal)
+            print("...recording...")
             
         } catch {
             finishRecording(success: false)
@@ -102,7 +159,8 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         audioRecorder.stop()
         audioRecorder = nil
         mphLabel.textColor = UIColor.whiteColor()
-
+        mphTextLabel.textColor = UIColor.whiteColor()
+        print("ended recording")
         
         if success {
             buttonLabel.setTitle("RE-RECORD", forState: .Normal)
@@ -116,7 +174,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     }
     
     func playRecording(){
-        let url = getFileURL()
+        let url = getAudioURL()
         
         do {
             audioPlayer = try AVAudioPlayer(contentsOfURL: url, fileTypeHint: ".m4a")
@@ -131,6 +189,48 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         }
     }
     
+    
+    func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
+        let current = newLocation
+        let speed = current.speed*2.23694
+        let lng = current.coordinate.longitude
+        let lat = current.coordinate.latitude
+        if speed <= 0 {
+            mphLabel.text = "0"
+        } else {
+            mphLabel.text = String(speed)
+        }
+        let fullLog = "\(NSDate()) -- \(speed)"
+        logSpeed(fullLog)
+    }
+    
+    func createLog(){
+        let file = "log.txt"
+        let text = "MPH LOG"
+        
+            let path = getFileURL(file)
+            
+            //writing
+            do {
+                try text.writeToURL(path, atomically: false, encoding: NSUTF8StringEncoding)
+            } catch {/* error handling here */}
+//            
+//            //reading
+//            do {
+//                let text2 = try NSString(contentsOfURL: path, encoding: NSUTF8StringEncoding)
+//            }
+//            catch {/* error handling here */}
+    }
+    
+    func logSpeed(logString: String){
+        do {
+            let url = getFileURL("log.txt")
+            try logString.appendLineToURL(url)
+        } catch {
+            print("ERROR: could not write to file")
+        }
+    }
+    
     // File Helpers
     
     func getCacheDirectory() -> AnyObject {
@@ -139,28 +239,46 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         return paths[0]
     }
     
-    func getFileURL() -> NSURL {
+    func getAudioURL() -> NSURL {
         
         let path = getCacheDirectory().stringByAppendingPathComponent(fileName)
         let filePath = NSURL(fileURLWithPath: path)
-        
+        return filePath
+    }
+    
+    func getFileURL(file: String) -> NSURL {
+        let path = getCacheDirectory().stringByAppendingPathComponent(file)
+        let filePath = NSURL(fileURLWithPath: path)
         return filePath
     }
 
     
 }//class
 
-extension CLLocation {
-    var coordinates: [String:Double] {
-        
-        var coord = [String : Double]()
-        let lat = self.coordinate.latitude
-        let lon = self.coordinate.longitude
-        coord["latitude"] = lat
-        coord["longitude"] = lon
-        
-        return coord
+
+extension String {
+    func appendLineToURL(fileURL: NSURL) throws {
+        try self.stringByAppendingString("\n").appendToURL(fileURL)
+    }
+    
+    func appendToURL(fileURL: NSURL) throws {
+        let data = self.dataUsingEncoding(NSUTF8StringEncoding)!
+        try data.appendToURL(fileURL)
     }
 }
 
+extension NSData {
+    func appendToURL(fileURL: NSURL) throws {
+        if let fileHandle = try? NSFileHandle(forWritingToURL: fileURL) {
+            defer {
+                fileHandle.closeFile()
+            }
+            fileHandle.seekToEndOfFile()
+            fileHandle.writeData(self)
+        }
+        else {
+            try writeToURL(fileURL, options: .DataWritingAtomic)
+        }
+    }
+}
 
