@@ -17,9 +17,9 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="0:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GeQ-M5-gpA">
-                                <rect key="frame" x="258" y="276" width="85" height="48"/>
-                                <fontDescription key="fontDescription" type="system" pointSize="40"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="45" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GeQ-M5-gpA">
+                                <rect key="frame" x="241" y="240" width="119" height="120"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="100"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -32,13 +32,32 @@
                                     <action selector="buttonPressed:" destination="BYZ-38-t0r" eventType="touchUpInside" id="fIq-ae-ws9"/>
                                 </connections>
                             </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="n49-tI-7Ml">
+                                <rect key="frame" x="285" y="117" width="30" height="30"/>
+                                <state key="normal" title="Play">
+                                    <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="playButtonTapped:" destination="BYZ-38-t0r" eventType="touchUpInside" id="eLM-hg-EaC"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="mph" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="6c9-Sh-sbM">
+                                <rect key="frame" x="375" y="319" width="41" height="24"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="48m-LN-Z59" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="D0Z-K6-HbO"/>
-                            <constraint firstItem="GeQ-M5-gpA" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="dnr-M8-8kC"/>
-                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="48m-LN-Z59" secondAttribute="bottom" constant="123" id="eGS-hf-YG3"/>
-                            <constraint firstItem="GeQ-M5-gpA" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="u2j-p2-jkX"/>
+                            <constraint firstItem="n49-tI-7Ml" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="48S-nQ-OJR"/>
+                            <constraint firstItem="6c9-Sh-sbM" firstAttribute="leading" secondItem="GeQ-M5-gpA" secondAttribute="trailing" constant="15" id="63c-qP-Urf"/>
+                            <constraint firstItem="48m-LN-Z59" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="FRs-4E-ekk"/>
+                            <constraint firstItem="n49-tI-7Ml" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="97" id="Gbf-6r-5dp"/>
+                            <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="48m-LN-Z59" secondAttribute="bottom" constant="123" id="Ufo-Sc-0L0"/>
+                            <constraint firstItem="GeQ-M5-gpA" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="XxX-5L-HAn"/>
+                            <constraint firstItem="6c9-Sh-sbM" firstAttribute="top" secondItem="GeQ-M5-gpA" secondAttribute="bottom" constant="-41" id="nWw-ml-Lx7"/>
+                            <constraint firstItem="GeQ-M5-gpA" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="ray-Us-wjT"/>
                         </constraints>
                     </view>
                     <connections>

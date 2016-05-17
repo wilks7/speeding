@@ -10,18 +10,19 @@ import UIKit
 import AVFoundation
 import CoreLocation
 
-class ViewController: UIViewController, AVAudioRecorderDelegate, CLLocationManagerDelegate {
+class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDelegate, CLLocationManagerDelegate {
     
     var recordingSession: AVAudioSession!
     var audioRecorder: AVAudioRecorder!
-    var isRecording = false
+    var audioPlayer: AVAudioPlayer!
+    
+    let fileName = "demo.m4a"
     
     @IBOutlet weak var mphLabel: UILabel!
     @IBOutlet weak var buttonLabel: UIButton!
     
     @IBAction func buttonPressed(sender: AnyObject) {
         if audioRecorder == nil {
-            mphLabel.textColor = UIColor.redColor()
             startRecording()
         }
         else {
@@ -30,48 +31,27 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, CLLocationManag
         }
     }
     
-    var locationManger = CLLocationManager()
+    @IBAction func playButtonTapped(sender: AnyObject) {
+        playRecording()
+    }
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        //setupLocationManager()
-        
-        locationManger.delegate = self
-        locationManger.distanceFilter = kCLDistanceFilterNone
-        locationManger.desiredAccuracy = kCLLocationAccuracyBest
-        self.locationManger.requestAlwaysAuthorization()
-        
-//        switch CLLocationManager.authorizationStatus() {
-//        case .AuthorizedAlways:
-//            print("hi")
-//        case .NotDetermined:
-//            locationManger.requestAlwaysAuthorization()
-//        case .AuthorizedWhenInUse, .Restricted, .Denied:
-//            let alertController = UIAlertController(
-//                title: "Background Location Access Disabled",
-//                message: "In order to be notified about adorable kittens near you, please open this app's settings and set location access to 'Always'.",
-//                preferredStyle: .Alert)
-//            
-//            let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
-//            alertController.addAction(cancelAction)
-//            
-//            let openAction = UIAlertAction(title: "Open Settings", style: .Default) { (action) in
-//                if let url = NSURL(string:UIApplicationOpenSettingsURLString) {
-//                    UIApplication.sharedApplication().openURL(url)
-//                }
-//            }
-//            alertController.addAction(openAction)
-//            
-//            self.presentViewController(alertController, animated: true, completion: nil)
-//        }
+        setupSession()
+    }//viewdidload
+    
+    
+    // FUNCTIONS: - Audio Recording
+    
+    func setupSession(){
         
         recordingSession = AVAudioSession.sharedInstance()
         
         do {
             try recordingSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
             try recordingSession.setActive(true)
-            recordingSession.requestRecordPermission() { [unowned self] (allowed: Bool) -> Void in
+            recordingSession.requestRecordPermission() { (allowed: Bool) -> Void in
                 dispatch_async(dispatch_get_main_queue()) {
                     if allowed {
                         print("Got persmission")
@@ -81,25 +61,23 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, CLLocationManag
                 }
             }
         } catch {
-            // failed to record!
+            print("failed to record!")
         }
     }
     
-//    func recordTapped() {
-//        if audioRecorder == nil {
-//            startRecording()
-//        } else {
-//            finishRecording(success: true)
-//        }
-//    }
-    
     func startRecording() {
+
+        let audioUrl = getFileURL()
         
-        var documents: AnyObject = NSSearchPathForDirectoriesInDomains( NSSearchPathDirectory.DocumentDirectory,  NSSearchPathDomainMask.UserDomainMask, true)[0]
-        var str =  documents.stringByAppendingPathComponent("recording.m4a")
-        var audioUrl = NSURL.fileURLWithPath(str as String)
+        let maxSettings = [//filename should be .caf
+            AVFormatIDKey: Int(kAudioFormatAppleLossless),
+            AVEncoderAudioQualityKey : AVAudioQuality.Max.rawValue,
+            AVEncoderBitRateKey : 320000,
+            AVNumberOfChannelsKey: 2 as NSNumber,
+            AVSampleRateKey : 44100.0
+        ]
         
-        let settings = [
+        let smallSettings = [//filename should be .m4a
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
             AVSampleRateKey: 12000.0,
             AVNumberOfChannelsKey: 1 as NSNumber,
@@ -107,10 +85,11 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, CLLocationManag
         ]
         
         do {
-            audioRecorder = try AVAudioRecorder(URL: audioUrl, settings: settings)
+            audioRecorder = try AVAudioRecorder(URL: audioUrl, settings: smallSettings)
             audioRecorder.delegate = self
             audioRecorder.record()
             
+            mphLabel.textColor = UIColor.redColor()
             buttonLabel.setTitle("STOP", forState: .Normal)
             
         } catch {
@@ -122,38 +101,54 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, CLLocationManag
     func finishRecording(success success: Bool) {
         audioRecorder.stop()
         audioRecorder = nil
+        mphLabel.textColor = UIColor.whiteColor()
 
+        
         if success {
             buttonLabel.setTitle("RE-RECORD", forState: .Normal)
         } else {
             buttonLabel.setTitle("RECORD", forState: .Normal)
-            // recording failed :(
+            let alert = UIAlertController(title: "Recording Failed", message: "There was a problem saving the recording, it could be a space issue", preferredStyle: .Alert)
+            let okButton = UIAlertAction(title: "Ok", style: .Default, handler: nil)
+            alert.addAction(okButton)
+            presentViewController(alert, animated: true, completion: nil)
         }
     }
     
-    func setupLocationManager(){
-        locationManger.delegate = self
-        locationManger.distanceFilter = kCLDistanceFilterNone
-        locationManger.desiredAccuracy = kCLLocationAccuracyBest
-        //locationManger.startUpdatingLocation()
-    }
-    
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func playRecording(){
+        let url = getFileURL()
         
-        print("location found")
-        
-        if let foundLocation = locations.first{
-            print(foundLocation.coordinate)
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOfURL: url, fileTypeHint: ".m4a")
+            audioPlayer.delegate = self
+            audioPlayer.prepareToPlay()
+            audioPlayer.volume = 5.0
+            audioPlayer.play()
+            
+        } catch {
+            ////finishRecording(success: false)
+            print("Cant find file")
         }
     }
     
-    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
-        print(error)
-        print("Cant Get Current Location")
+    // File Helpers
+    
+    func getCacheDirectory() -> AnyObject {
+        
+        let paths = NSSearchPathForDirectoriesInDomains( NSSearchPathDirectory.DocumentDirectory,  NSSearchPathDomainMask.UserDomainMask, true)
+        return paths[0]
     }
     
+    func getFileURL() -> NSURL {
+        
+        let path = getCacheDirectory().stringByAppendingPathComponent(fileName)
+        let filePath = NSURL(fileURLWithPath: path)
+        
+        return filePath
+    }
 
-}
+    
+}//class
 
 extension CLLocation {
     var coordinates: [String:Double] {
