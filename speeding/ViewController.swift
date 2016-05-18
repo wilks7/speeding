@@ -36,7 +36,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         //playRecording()
         do {
         let result = try String(contentsOfURL: getFileURL("log.txt"))
-            print(result)
+        print(result)
 
         } catch {
             
