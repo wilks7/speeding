@@ -49,12 +49,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     }
     
     @IBAction func shareTapped(sender: AnyObject) {
-        let log = getFileURL("log.txt")
-        let recording = getFileURL("recording.m4a")
-        let objectsToShare = [log,recording]
-        let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
-        
-        self.presentViewController(activityVC, animated: true, completion: nil)
+        shareLog()
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -94,6 +89,9 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         if CLLocationManager.authorizationStatus() != .AuthorizedAlways {
             mphLabel.text = "--"
             mphTextLabel.hidden = true
+        } else {
+            mphLabel.text = "0"
+            mphTextLabel.hidden = false
         }
     }
     
@@ -176,6 +174,14 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         
         if success {
             buttonLabel.setTitle("RE-RECORD", forState: .Normal)
+            let alert = UIAlertController(title: "Succesfully Recorded!", message: "Would you like send yourself a copy of the speed log and a recording?", preferredStyle: .Alert)
+            let yesButton = UIAlertAction(title: "Yes", style: .Default) { (action) in
+                self.shareLog()
+            }
+            let noButton = UIAlertAction(title: "No", style: .Default, handler: nil)
+            alert.addAction(noButton)
+            alert.addAction(yesButton)
+            presentViewController(alert, animated: true, completion: nil)
         } else {
             buttonLabel.setTitle("RECORD", forState: .Normal)
             let alert = UIAlertController(title: "Recording Failed", message: "There was a problem saving the recording, it could be a space issue", preferredStyle: .Alert)
@@ -241,6 +247,15 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         }
     }
     
+    func shareLog(){
+        let log = getFileURL("log.txt")
+        let recording = getFileURL("recording.m4a")
+        let objectsToShare = [log,recording]
+        let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+        
+        self.presentViewController(activityVC, animated: true, completion: nil)
+    }
+    
     // Segue
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
@@ -270,6 +285,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         } else if status == .AuthorizedAlways {
             setupLocationManager()
             setupSession()
+            buttonSetup()
         }
     }
     

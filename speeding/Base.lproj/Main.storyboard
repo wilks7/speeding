@@ -48,7 +48,7 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0YW-SY-WaB">
+                            <navigationBar contentMode="scaleToFill" ambiguous="YES" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0YW-SY-WaB">
                                 <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
                                 <color key="barTintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
                                 <items>
@@ -74,14 +74,13 @@
                             <constraint firstItem="n49-tI-7Ml" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="48S-nQ-OJR"/>
                             <constraint firstItem="6c9-Sh-sbM" firstAttribute="leading" secondItem="GeQ-M5-gpA" secondAttribute="trailing" constant="15" id="63c-qP-Urf"/>
                             <constraint firstItem="48m-LN-Z59" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="FRs-4E-ekk"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="0YW-SY-WaB" secondAttribute="trailing" constant="-20" id="GKK-cH-40S"/>
                             <constraint firstItem="n49-tI-7Ml" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="97" id="Gbf-6r-5dp"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="48m-LN-Z59" secondAttribute="bottom" constant="123" id="Ufo-Sc-0L0"/>
                             <constraint firstItem="GeQ-M5-gpA" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="XxX-5L-HAn"/>
-                            <constraint firstItem="0YW-SY-WaB" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="cqv-MO-9Oa"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="0YW-SY-WaB" secondAttribute="trailing" constant="-20" id="Yud-3h-Xtf"/>
+                            <constraint firstItem="0YW-SY-WaB" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="akK-I8-bfp"/>
                             <constraint firstItem="6c9-Sh-sbM" firstAttribute="top" secondItem="GeQ-M5-gpA" secondAttribute="bottom" constant="-41" id="nWw-ml-Lx7"/>
                             <constraint firstItem="GeQ-M5-gpA" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="ray-Us-wjT"/>
-                            <constraint firstItem="0YW-SY-WaB" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="-20" id="sa4-Za-QBz"/>
                         </constraints>
                     </view>
                     <connections>
