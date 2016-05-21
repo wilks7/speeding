@@ -12,12 +12,46 @@ import CoreLocation
 
 class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDelegate, CLLocationManagerDelegate, UIPopoverPresentationControllerDelegate {
     
+    static let sharedInstance = ViewController()
+    
     var recordingSession: AVAudioSession!
     var audioRecorder: AVAudioRecorder!
     var audioPlayer: AVAudioPlayer!
     var locationManager = CLLocationManager()
 
     let fileName = "recording.m4a"
+    
+    var redText: Bool {
+        if let recording = NSUserDefaults.standardUserDefaults().valueForKey("redText") as? Bool{
+            return recording
+        } else {
+            return true
+        }
+    }
+    
+    var shake: Bool {
+        if let shake = NSUserDefaults.standardUserDefaults().valueForKey("shake") as? Bool {
+            return shake
+        } else {
+            return false
+        }
+    }
+    
+    var miles: Bool{
+        if let miles = NSUserDefaults.standardUserDefaults().valueForKey("miles") as? Bool {
+            return miles
+        } else {
+            return true
+        }
+    }
+    
+    var dashMode: Bool {
+        if let dash = NSUserDefaults.standardUserDefaults().valueForKey("dashMode") as? Bool {
+            return dash
+        } else {
+            return false
+        }
+    }
     
     @IBOutlet weak var mphLabel: UILabel!
     @IBOutlet weak var mphTextLabel: UILabel!
@@ -26,14 +60,19 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     @IBOutlet weak var navBarOutlet: UINavigationBar!
     @IBOutlet weak var shareButtonOutlet: UIBarButtonItem!
     @IBOutlet weak var settingsButtonOutlet: UIBarButtonItem!
+    @IBOutlet weak var redDotOutlet: UIView!
+    
+    @IBAction func unwindToVC(segue: UIStoryboardSegue) {
+        setupButtons()
+    }
     
     @IBAction func buttonPressed(sender: AnyObject) {
-        if audioRecorder == nil {
-            startRecording()
-        }
-        else {
-            finishRecording(success: true)
-        }
+//        if audioRecorder == nil {
+//            startRecording()
+//        }
+//        else {
+//            finishRecording(success: true)
+//        }
     }
     
     @IBAction func playButtonTapped(sender: AnyObject) {
@@ -78,8 +117,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
     }
-    
-    
+
     func setupLocationManager(){
         locationManager.delegate = self
         locationManager.distanceFilter = kCLDistanceFilterNone
@@ -90,6 +128,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     func setupButtons(){
         buttonLabel.hidden = true
         playButtonLabel.hidden = true
+        redDotOutlet.hidden = true
         mphLabel.font = UIFont(name: "DBLCDTempBlack", size: 150.0)
         
         if CLLocationManager.authorizationStatus() != .AuthorizedAlways {
@@ -100,27 +139,22 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
             mphTextLabel.hidden = false
         }
         
-        if let shake = NSUserDefaults.standardUserDefaults().valueForKey("shake") as? Bool{
-            if shake {
-                navBarOutlet.hidden = false
-            } else {
-                navBarOutlet.hidden = true
-            }
-        }
-        if let recording = NSUserDefaults.standardUserDefaults().valueForKey("redText") as? Bool{
-            if recording {
-                //HANDLE IF REDTEXT
-            } else {
-                //HANDLE IF REDDOT
-            }
+        if self.shake {
+            navBarOutlet.hidden = false
+        } else {
+            navBarOutlet.hidden = false
         }
         
-        if let distance = NSUserDefaults.standardUserDefaults().valueForKey("miles") as? Bool {
-            if distance {
-                mphTextLabel.text = "mph"
-            } else {
-                mphTextLabel.text = "km/h"
-            }
+        if self.miles {
+            mphTextLabel.text = "mph"
+        } else {
+            mphTextLabel.text = "km/h"
+        }
+        
+        if self.dashMode {
+            self.view.transform = CGAffineTransformMakeScale(-1, 1)
+        } else {
+            self.view.transform = CGAffineTransformMakeScale(1, 1)
         }
     }
     
@@ -163,13 +197,13 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
 
         let audioUrl = getAudioURL()
         
-        let maxSettings = [//filename should be .caf
-            AVFormatIDKey: Int(kAudioFormatAppleLossless),
-            AVEncoderAudioQualityKey : AVAudioQuality.Max.rawValue,
-            AVEncoderBitRateKey : 320000,
-            AVNumberOfChannelsKey: 2 as NSNumber,
-            AVSampleRateKey : 44100.0
-        ]
+//        let maxSettings = [//filename should be .caf
+//            AVFormatIDKey: Int(kAudioFormatAppleLossless),
+//            AVEncoderAudioQualityKey : AVAudioQuality.Max.rawValue,
+//            AVEncoderBitRateKey : 320000,
+//            AVNumberOfChannelsKey: 2 as NSNumber,
+//            AVSampleRateKey : 44100.0
+//        ]
         
         let smallSettings = [//filename should be .m4a
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
@@ -183,8 +217,13 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
             audioRecorder.delegate = self
             audioRecorder.record()
             
-            mphLabel.textColor = UIColor.redColor()
-            mphTextLabel.textColor = UIColor.redColor()
+            if redText {
+                mphLabel.textColor = UIColor.redColor()
+                mphTextLabel.textColor = UIColor.redColor()
+            } else {
+                redDotOutlet.hidden = false
+            }
+            
             buttonLabel.setTitle("STOP", forState: .Normal)
             print("...recording...")
             
@@ -197,8 +236,12 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     func finishRecording(success success: Bool) {
         audioRecorder.stop()
         audioRecorder = nil
-        mphLabel.textColor = UIColor.whiteColor()
-        mphTextLabel.textColor = UIColor.whiteColor()
+        if redText {
+            mphLabel.textColor = UIColor.whiteColor()
+            mphTextLabel.textColor = UIColor.whiteColor()
+        } else {
+            redDotOutlet.hidden = true
+        }
         print("ended recording")
         
         if success {
@@ -238,7 +281,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     
     func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
-        let current = newLocation
         let speed = newLocation.speed
         let speedKph = speed*3.6
         let speedMph = Int(round(speed*2.23694))
@@ -252,19 +294,14 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         if speed <= 1 {
             mphLabel.text = "0"
         } else {
-            if let distance = NSUserDefaults.standardUserDefaults().valueForKey("miles") as? Bool {
-                if distance {
-                    mphTextLabel.text = "mph"
-                    mphTextLabel.text = String(speedMph)
-                    fullLog = "\(todayString) | \(speedMph) mph"
-                } else {
-                    mphTextLabel.text = "km/h"
-                    mphLabel.text = String(speedKph)
-                    fullLog = "\(todayString) | \(speedKph) kph"
-
-                }
-            } else {
+            if self.miles {
+                mphTextLabel.text = "mph"
+                mphTextLabel.text = String(speedMph)
                 fullLog = "\(todayString) | \(speedMph) mph"
+            } else {
+                mphTextLabel.text = "km/h"
+                mphLabel.text = String(speedKph)
+                fullLog = "\(todayString) | \(speedKph) kph"
             }
         }
 
@@ -306,7 +343,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         if segue.identifier == "showSettings"{
             let vc = segue.destinationViewController as! SettingsTableViewController
             
-            var controller = vc.popoverPresentationController
+            let controller = vc.popoverPresentationController
             
             if controller != nil {
                 controller?.delegate = self
@@ -385,18 +422,15 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent?) {
         
         if(event!.subtype == UIEventSubtype.MotionShake) {
-            if let shake = NSUserDefaults.standardUserDefaults().valueForKey("shake") as? Bool{
-                if shake {
-                    if navBarOutlet.hidden {
-                        navBarOutlet.hidden = false
-                    } else {
-                        navBarOutlet.hidden = true
-                    }
-                } else {
+            if self.shake {
+                if navBarOutlet.hidden {
                     navBarOutlet.hidden = false
+                } else {
+                    navBarOutlet.hidden = true
                 }
+            } else {
+                navBarOutlet.hidden = false
             }
-
             print("shake shake shake")
         }
     }
@@ -429,4 +463,3 @@ extension NSData {
         }
     }
 }
-
