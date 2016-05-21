@@ -15,7 +15,8 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     var recordingSession: AVAudioSession!
     var audioRecorder: AVAudioRecorder!
     var audioPlayer: AVAudioPlayer!
-    
+    var locationManager = CLLocationManager()
+
     let fileName = "demo.m4a"
     
     @IBOutlet weak var mphLabel: UILabel!
@@ -54,47 +55,44 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        buttonSetup()
+        setupSession()
+        setupLocationManager()
+    }//viewdidload
+    
+    override func viewDidAppear(animated: Bool) {
+        super.viewDidAppear(animated)
+        checkLocationSettings()
+    }
+    
+    
+    func setupLocationManager(){
+        locationManager.delegate = self
+        locationManager.distanceFilter = kCLDistanceFilterNone
+        locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        locationManager.startUpdatingLocation()
+    }
+    
+    func buttonSetup(){
         buttonLabel.hidden = true
         //playButtonLabel.hidden = true
         mphLabel.font = UIFont(name: "DBLCDTempBlack", size: 150.0)
         
-        setupSession()
-        checkLocation()
-        setupLocationManager()
-    }//viewdidload
-    
-    
-    var locationManger = CLLocationManager()
-    func setupLocationManager(){
-        locationManger.delegate = self
-        locationManger.distanceFilter = kCLDistanceFilterNone
-        locationManger.desiredAccuracy = kCLLocationAccuracyBest
-        locationManger.startUpdatingLocation()
+        if CLLocationManager.authorizationStatus() != .AuthorizedAlways {
+            mphLabel.text = "--"
+            mphTextLabel.hidden = true
+        }
     }
     
-    func checkLocation(){
+    func checkLocationSettings(){
         switch CLLocationManager.authorizationStatus() {
         case .AuthorizedAlways:
             print("Authorized location for all")
         case .NotDetermined:
-            locationManger.requestAlwaysAuthorization()
+            print("Requesting permisions....")
+            locationManager.requestAlwaysAuthorization()
         case .AuthorizedWhenInUse, .Restricted, .Denied:
-            let alertController = UIAlertController(
-                title: "Background Location Access Disabled",
-                message: "In order to be notified about adorable kittens near you, please open this app's settings and set location access to 'Always'.",
-                preferredStyle: .Alert)
-            
-            let cancelAction = UIAlertAction(title: "Cancel", style: .Cancel, handler: nil)
-            alertController.addAction(cancelAction)
-            
-            let openAction = UIAlertAction(title: "Open Settings", style: .Default) { (action) in
-                if let url = NSURL(string:UIApplicationOpenSettingsURLString) {
-                    UIApplication.sharedApplication().openURL(url)
-                }
-            }
-            alertController.addAction(openAction)
-            
-            self.presentViewController(alertController, animated: true, completion: nil)
+            backgroundAlert()
         }
     }
     
@@ -229,6 +227,41 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
             print("ERROR: could not write to log file")
         }
     }
+    
+    // MARK: - CoreLocation Delegate
+    
+    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus){
+        
+        if status == .AuthorizedWhenInUse || status == .Restricted || status == .Denied {
+            backgroundAlert()
+        } else if status == .AuthorizedAlways {
+            setupLocationManager()
+            setupSession()
+        }
+
+    }
+    
+    // Background Location Alert
+    
+    func backgroundAlert(){
+        let alertController = UIAlertController(
+            title: "Background Location Access Disabled",
+            message: "In order to track and log your speed please open this app's settings and set location access to 'Always'.",
+            preferredStyle: .Alert)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Default, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        let openAction = UIAlertAction(title: "Open Settings", style: .Default) { (action) in
+            if let url = NSURL(string:UIApplicationOpenSettingsURLString) {
+                UIApplication.sharedApplication().openURL(url)
+            }
+        }
+        alertController.addAction(openAction)
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+    
     
     // File Helpers
     
