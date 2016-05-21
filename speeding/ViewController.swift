@@ -10,14 +10,14 @@ import UIKit
 import AVFoundation
 import CoreLocation
 
-class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDelegate, CLLocationManagerDelegate {
+class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDelegate, CLLocationManagerDelegate, UIPopoverPresentationControllerDelegate {
     
     var recordingSession: AVAudioSession!
     var audioRecorder: AVAudioRecorder!
     var audioPlayer: AVAudioPlayer!
     var locationManager = CLLocationManager()
 
-    let fileName = "demo.m4a"
+    let fileName = "recording.m4a"
     
     @IBOutlet weak var mphLabel: UILabel!
     @IBOutlet weak var mphTextLabel: UILabel!
@@ -40,8 +40,21 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         print(result)
 
         } catch {
-            
+            print("Error Playing")
         }
+    }
+    
+    @IBAction func settingsTapped(sender: AnyObject) {
+        self.performSegueWithIdentifier("showSettings", sender: self)
+    }
+    
+    @IBAction func shareTapped(sender: AnyObject) {
+        let log = getFileURL("log.txt")
+        let recording = getFileURL("recording.m4a")
+        let objectsToShare = [log,recording]
+        let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
+        
+        self.presentViewController(activityVC, animated: true, completion: nil)
     }
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
@@ -75,7 +88,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     func buttonSetup(){
         buttonLabel.hidden = true
-        //playButtonLabel.hidden = true
+        playButtonLabel.hidden = true
         mphLabel.font = UIFont(name: "DBLCDTempBlack", size: 150.0)
         
         if CLLocationManager.authorizationStatus() != .AuthorizedAlways {
@@ -228,6 +241,26 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         }
     }
     
+    // Segue
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if segue.identifier == "showSettings"{
+            let vc = segue.destinationViewController as! UIViewController
+            
+            var controller = vc.popoverPresentationController
+            
+            if controller != nil {
+                controller?.delegate = self
+            }
+        }
+    }
+    
+    // MARK: - PopOver Delegate
+    
+    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .None
+    }
+    
     // MARK: - CoreLocation Delegate
     
     func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus){
@@ -238,7 +271,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
             setupLocationManager()
             setupSession()
         }
-
     }
     
     // Background Location Alert

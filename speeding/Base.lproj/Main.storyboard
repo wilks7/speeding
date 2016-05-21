@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="10085"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--View Controller-->
@@ -47,17 +48,40 @@
                                 <color key="textColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <navigationBar contentMode="scaleToFill" translucent="NO" translatesAutoresizingMaskIntoConstraints="NO" id="0YW-SY-WaB">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="44"/>
+                                <color key="barTintColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
+                                <items>
+                                    <navigationItem title="Title" id="szu-Bk-Def">
+                                        <barButtonItem key="leftBarButtonItem" systemItem="action" id="RAZ-Xu-J2g">
+                                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <connections>
+                                                <action selector="shareTapped:" destination="BYZ-38-t0r" id="Vqi-aV-oGk"/>
+                                            </connections>
+                                        </barButtonItem>
+                                        <barButtonItem key="rightBarButtonItem" systemItem="edit" id="K4n-2R-Sn3">
+                                            <color key="tintColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                            <connections>
+                                                <action selector="settingsTapped:" destination="BYZ-38-t0r" id="JSp-X1-r6B"/>
+                                            </connections>
+                                        </barButtonItem>
+                                    </navigationItem>
+                                </items>
+                            </navigationBar>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <constraints>
                             <constraint firstItem="n49-tI-7Ml" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="48S-nQ-OJR"/>
                             <constraint firstItem="6c9-Sh-sbM" firstAttribute="leading" secondItem="GeQ-M5-gpA" secondAttribute="trailing" constant="15" id="63c-qP-Urf"/>
                             <constraint firstItem="48m-LN-Z59" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="FRs-4E-ekk"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="0YW-SY-WaB" secondAttribute="trailing" constant="-20" id="GKK-cH-40S"/>
                             <constraint firstItem="n49-tI-7Ml" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="97" id="Gbf-6r-5dp"/>
                             <constraint firstItem="wfy-db-euE" firstAttribute="top" secondItem="48m-LN-Z59" secondAttribute="bottom" constant="123" id="Ufo-Sc-0L0"/>
                             <constraint firstItem="GeQ-M5-gpA" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="XxX-5L-HAn"/>
+                            <constraint firstItem="0YW-SY-WaB" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leadingMargin" constant="-20" id="cqv-MO-9Oa"/>
                             <constraint firstItem="6c9-Sh-sbM" firstAttribute="top" secondItem="GeQ-M5-gpA" secondAttribute="bottom" constant="-41" id="nWw-ml-Lx7"/>
                             <constraint firstItem="GeQ-M5-gpA" firstAttribute="centerY" secondItem="8bC-Xf-vdC" secondAttribute="centerY" id="ray-Us-wjT"/>
+                            <constraint firstItem="0YW-SY-WaB" firstAttribute="top" secondItem="y3c-jy-aDJ" secondAttribute="bottom" constant="-20" id="sa4-Za-QBz"/>
                         </constraints>
                     </view>
                     <connections>
@@ -65,11 +89,43 @@
                         <outlet property="mphLabel" destination="GeQ-M5-gpA" id="sJ1-Qd-LKg"/>
                         <outlet property="mphTextLabel" destination="6c9-Sh-sbM" id="Zeh-Cb-9FS"/>
                         <outlet property="playButtonLabel" destination="n49-tI-7Ml" id="VIZ-hp-Jmg"/>
+                        <segue destination="Qkg-QC-bUv" kind="popoverPresentation" identifier="showSettings" popoverAnchorBarButtonItem="K4n-2R-Sn3" id="BAH-SB-4P1">
+                            <popoverArrowDirection key="popoverArrowDirection" up="YES" down="YES" left="YES" right="YES"/>
+                        </segue>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="689" y="647"/>
+            <point key="canvasLocation" x="437" y="670"/>
+        </scene>
+        <!--View Controller-->
+        <scene sceneID="JX4-NA-4af">
+            <objects>
+                <viewController id="Qkg-QC-bUv" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="mwo-0B-6tO"/>
+                        <viewControllerLayoutGuide type="bottom" id="BX5-TL-KzX"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Q7Q-vj-7Fa">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="t7l-hw-Bby">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                            </stackView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="t7l-hw-Bby" firstAttribute="top" secondItem="mwo-0B-6tO" secondAttribute="bottom" constant="-20" id="3Oy-x6-GaH"/>
+                            <constraint firstItem="BX5-TL-KzX" firstAttribute="top" secondItem="t7l-hw-Bby" secondAttribute="bottom" id="kSI-65-c23"/>
+                            <constraint firstItem="t7l-hw-Bby" firstAttribute="leading" secondItem="Q7Q-vj-7Fa" secondAttribute="leadingMargin" constant="-20" id="kaG-Cg-JSI"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="t7l-hw-Bby" secondAttribute="trailing" constant="-20" id="onn-IX-1bU"/>
+                        </constraints>
+                    </view>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="VLt-EQ-Mnw" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1178" y="675"/>
         </scene>
     </scenes>
 </document>
