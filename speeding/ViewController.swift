@@ -23,6 +23,9 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     @IBOutlet weak var mphTextLabel: UILabel!
     @IBOutlet weak var buttonLabel: UIButton!
     @IBOutlet weak var playButtonLabel: UIButton!
+    @IBOutlet weak var navBarOutlet: UINavigationBar!
+    @IBOutlet weak var shareButtonOutlet: UIBarButtonItem!
+    @IBOutlet weak var settingsButtonOutlet: UIBarButtonItem!
     
     @IBAction func buttonPressed(sender: AnyObject) {
         if audioRecorder == nil {
@@ -63,7 +66,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        buttonSetup()
+        setupButtons()
         setupSession()
         setupLocationManager()
     }//viewdidload
@@ -71,6 +74,9 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
         checkLocationSettings()
+    }
+    override func viewWillAppear(animated: Bool) {
+        super.viewWillAppear(animated)
     }
     
     
@@ -81,7 +87,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         locationManager.startUpdatingLocation()
     }
     
-    func buttonSetup(){
+    func setupButtons(){
         buttonLabel.hidden = true
         playButtonLabel.hidden = true
         mphLabel.font = UIFont(name: "DBLCDTempBlack", size: 150.0)
@@ -92,6 +98,29 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         } else {
             mphLabel.text = "0"
             mphTextLabel.hidden = false
+        }
+        
+        if let shake = NSUserDefaults.standardUserDefaults().valueForKey("shake") as? Bool{
+            if shake {
+                navBarOutlet.hidden = false
+            } else {
+                navBarOutlet.hidden = true
+            }
+        }
+        if let recording = NSUserDefaults.standardUserDefaults().valueForKey("redText") as? Bool{
+            if recording {
+                //HANDLE IF REDTEXT
+            } else {
+                //HANDLE IF REDDOT
+            }
+        }
+        
+        if let distance = NSUserDefaults.standardUserDefaults().valueForKey("miles") as? Bool {
+            if distance {
+                mphTextLabel.text = "mph"
+            } else {
+                mphTextLabel.text = "km/h"
+            }
         }
     }
     
@@ -210,26 +239,41 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
         let current = newLocation
-        let speed = current.speed*2.23694
-        let speedMph = Int(round(speed))
-        
-        if speed <= 0 {
-            mphLabel.text = "0"
-        } else {
-            mphLabel.text = String(speedMph)
-        }
+        let speed = newLocation.speed
+        let speedKph = speed*3.6
+        let speedMph = Int(round(speed*2.23694))
         
         let formatter = NSDateFormatter()
         formatter.dateFormat = "MM.dd.yyyy-hh:mm:ss"
         let todayString = formatter.stringFromDate(NSDate())
+        
+        var fullLog = ""
+        
+        if speed <= 1 {
+            mphLabel.text = "0"
+        } else {
+            if let distance = NSUserDefaults.standardUserDefaults().valueForKey("miles") as? Bool {
+                if distance {
+                    mphTextLabel.text = "mph"
+                    mphTextLabel.text = String(speedMph)
+                    fullLog = "\(todayString) | \(speedMph) mph"
+                } else {
+                    mphTextLabel.text = "km/h"
+                    mphLabel.text = String(speedKph)
+                    fullLog = "\(todayString) | \(speedKph) kph"
 
-        let fullLog = "\(todayString) | \(speedMph) mph"
+                }
+            } else {
+                fullLog = "\(todayString) | \(speedMph) mph"
+            }
+        }
+
         logSpeed(fullLog)
     }
     
     func createLog(){
         let file = "log.txt"
-        let text = "MPH LOG"
+        let text = "Speed LOG"
         
         let path = getFileURL(file)
             
@@ -260,7 +304,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
         if segue.identifier == "showSettings"{
-            let vc = segue.destinationViewController as! UIViewController
+            let vc = segue.destinationViewController as! SettingsTableViewController
             
             var controller = vc.popoverPresentationController
             
@@ -285,7 +329,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         } else if status == .AuthorizedAlways {
             setupLocationManager()
             setupSession()
-            buttonSetup()
+            setupButtons()
         }
     }
     
@@ -331,7 +375,31 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         let filePath = NSURL(fileURLWithPath: path)
         return filePath
     }
+    
+    // Shake
+    
+    override func canBecomeFirstResponder() -> Bool {
+        return true
+    }
+    
+    override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent?) {
+        
+        if(event!.subtype == UIEventSubtype.MotionShake) {
+            if let shake = NSUserDefaults.standardUserDefaults().valueForKey("shake") as? Bool{
+                if shake {
+                    if navBarOutlet.hidden {
+                        navBarOutlet.hidden = false
+                    } else {
+                        navBarOutlet.hidden = true
+                    }
+                } else {
+                    navBarOutlet.hidden = false
+                }
+            }
 
+            print("shake shake shake")
+        }
+    }
     
 }//class
 
