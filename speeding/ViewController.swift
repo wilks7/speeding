@@ -12,7 +12,7 @@ import CoreLocation
 
 class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDelegate, CLLocationManagerDelegate, UIPopoverPresentationControllerDelegate {
     
-    static let sharedInstance = ViewController()
+    //static let sharedInstance = ViewController()
     
     var recordingSession: AVAudioSession!
     var audioRecorder: AVAudioRecorder!
@@ -53,13 +53,16 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         }
     }
     
-    @IBOutlet weak var mphLabel: UILabel!
+    @IBOutlet weak var speedLabel: UILabel!
     @IBOutlet weak var mphTextLabel: UILabel!
+    
     @IBOutlet weak var buttonLabel: UIButton!
     @IBOutlet weak var playButtonLabel: UIButton!
+    
     @IBOutlet weak var navBarOutlet: UINavigationBar!
     @IBOutlet weak var shareButtonOutlet: UIBarButtonItem!
     @IBOutlet weak var settingsButtonOutlet: UIBarButtonItem!
+    
     @IBOutlet weak var redDotOutlet: UIView!
     
     @IBAction func unwindToVC(segue: UIStoryboardSegue) {
@@ -96,6 +99,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
         if audioRecorder == nil {
+            setupSession()
             startRecording()
         }
         else {
@@ -106,7 +110,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     override func viewDidLoad() {
         super.viewDidLoad()
         setupButtons()
-        setupSession()
         setupLocationManager()
     }//viewdidload
     
@@ -129,13 +132,13 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         buttonLabel.hidden = true
         playButtonLabel.hidden = true
         redDotOutlet.hidden = true
-        mphLabel.font = UIFont(name: "DBLCDTempBlack", size: 150.0)
+        speedLabel.font = UIFont(name: "DBLCDTempBlack", size: 150.0)
         
         if CLLocationManager.authorizationStatus() != .AuthorizedAlways {
-            mphLabel.text = "--"
+            speedLabel.text = "--"
             mphTextLabel.hidden = true
         } else {
-            mphLabel.text = "0"
+            speedLabel.text = "0"
             mphTextLabel.hidden = false
         }
         
@@ -165,6 +168,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         case .NotDetermined:
             print("Requesting permisions....")
             locationManager.requestAlwaysAuthorization()
+            createLog()
         case .AuthorizedWhenInUse, .Restricted, .Denied:
             backgroundAlert()
         }
@@ -218,7 +222,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
             audioRecorder.record()
             
             if redText {
-                mphLabel.textColor = UIColor.redColor()
+                speedLabel.textColor = UIColor.redColor()
                 mphTextLabel.textColor = UIColor.redColor()
             } else {
                 redDotOutlet.hidden = false
@@ -237,7 +241,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         audioRecorder.stop()
         audioRecorder = nil
         if redText {
-            mphLabel.textColor = UIColor.whiteColor()
+            speedLabel.textColor = UIColor.whiteColor()
             mphTextLabel.textColor = UIColor.whiteColor()
         } else {
             redDotOutlet.hidden = true
@@ -291,16 +295,16 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         
         var fullLog = ""
         
-        if speed <= 1 {
-            mphLabel.text = "0"
+        if speed <= 0 {
+            speedLabel.text = "0"
         } else {
             if self.miles {
                 mphTextLabel.text = "mph"
-                mphTextLabel.text = String(speedMph)
+                speedLabel.text = String(speedMph)
                 fullLog = "\(todayString) | \(speedMph) mph"
             } else {
                 mphTextLabel.text = "km/h"
-                mphLabel.text = String(speedKph)
+                speedLabel.text = String(speedKph)
                 fullLog = "\(todayString) | \(speedKph) kph"
             }
         }
@@ -340,6 +344,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     // Segue
     
     override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
         if segue.identifier == "showSettings"{
             let vc = segue.destinationViewController as! SettingsTableViewController
             
