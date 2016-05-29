@@ -115,7 +115,7 @@
         <scene sceneID="AX4-6F-Fne">
             <objects>
                 <tableViewController id="2B8-8n-HAz" customClass="SettingsTableViewController" customModule="speeding" customModuleProvider="target" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" alpha="0.69999999999999996" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" dataMode="static" style="plain" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="70" sectionHeaderHeight="28" sectionFooterHeight="28" id="Yz6-N2-6mf">
+                    <tableView key="view" clipsSubviews="YES" alpha="0.69999999999999996" contentMode="scaleToFill" bounces="NO" dataMode="static" style="plain" allowsSelection="NO" showsSelectionImmediatelyOnTouchBegin="NO" rowHeight="70" sectionHeaderHeight="28" sectionFooterHeight="28" id="Yz6-N2-6mf">
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
@@ -269,7 +269,11 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h1u-7a-wUP">
-                                                    <rect key="frame" x="240" y="20" width="120" height="30"/>
+                                                    <rect key="frame" x="222.5" y="19" width="147" height="37"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="width" constant="147" id="Q3w-Qw-6ty"/>
+                                                        <constraint firstAttribute="height" constant="37" id="Rx2-9O-94j"/>
+                                                    </constraints>
                                                     <state key="normal" title="Location Settings"/>
                                                     <connections>
                                                         <action selector="locationButtonTapped:" destination="2B8-8n-HAz" eventType="touchUpInside" id="RIO-a1-cQw"/>
@@ -277,8 +281,8 @@
                                                 </button>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstItem="h1u-7a-wUP" firstAttribute="centerY" secondItem="ptl-Ta-jBO" secondAttribute="centerY" id="Alv-HU-HRg"/>
-                                                <constraint firstItem="h1u-7a-wUP" firstAttribute="centerX" secondItem="ptl-Ta-jBO" secondAttribute="centerX" id="GeX-eO-QgN"/>
+                                                <constraint firstItem="h1u-7a-wUP" firstAttribute="centerY" secondItem="ptl-Ta-jBO" secondAttribute="centerY" constant="2.75" id="Alv-HU-HRg"/>
+                                                <constraint firstItem="h1u-7a-wUP" firstAttribute="centerX" secondItem="ptl-Ta-jBO" secondAttribute="centerX" constant="-4" id="GeX-eO-QgN"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="calibratedWhite"/>
