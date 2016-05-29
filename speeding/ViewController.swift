@@ -19,7 +19,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     var audioPlayer: AVAudioPlayer!
     var locationManager = CLLocationManager()
 
-    let fileName = "recording.m4a"
+    let recordingFileName = "recording.m4a"
     
     var redText: Bool {
         if let recording = NSUserDefaults.standardUserDefaults().valueForKey("redText") as? Bool{
@@ -109,13 +109,16 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        checkFile("log.txt")
         setupButtons()
         setupLocationManager()
     }//viewdidload
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
-        checkLocationSettings()
+        if CLLocationManager.authorizationStatus() == .NotDetermined {
+            locationManager.requestAlwaysAuthorization()
+        }
     }
     override func viewWillAppear(animated: Bool) {
         super.viewWillAppear(animated)
@@ -158,19 +161,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
             self.view.transform = CGAffineTransformMakeScale(-1, 1)
         } else {
             self.view.transform = CGAffineTransformMakeScale(1, 1)
-        }
-    }
-    
-    func checkLocationSettings(){
-        switch CLLocationManager.authorizationStatus() {
-        case .AuthorizedAlways:
-            print("Authorized location for all")
-        case .NotDetermined:
-            print("Requesting permisions....")
-            locationManager.requestAlwaysAuthorization()
-            createLog()
-        case .AuthorizedWhenInUse, .Restricted, .Denied:
-            backgroundAlert()
         }
     }
     
@@ -217,6 +207,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         ]
         
         do {
+            
             audioRecorder = try AVAudioRecorder(URL: audioUrl, settings: smallSettings)
             audioRecorder.delegate = self
             audioRecorder.record()
@@ -249,8 +240,9 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         print("ended recording")
         
         if success {
-            buttonLabel.setTitle("RE-RECORD", forState: .Normal)
-            let alert = UIAlertController(title: "Succesfully Recorded!", message: "Would you like send yourself a copy of the speed log and a recording?", preferredStyle: .Alert)
+            //buttonLabel.setTitle("RE-RECORD", forState: .Normal)
+            
+            let alert = UIAlertController(title: "Succesfully Recorded!", message: "Every new audio recording overwrites the last, to ensure your recording is not overwritten we recommend sending yourself a copy now or with the share button later.", preferredStyle: .Alert)
             let yesButton = UIAlertAction(title: "Yes", style: .Default) { (action) in
                 self.shareLog()
             }
@@ -258,8 +250,10 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
             alert.addAction(noButton)
             alert.addAction(yesButton)
             presentViewController(alert, animated: true, completion: nil)
+            
         } else {
-            buttonLabel.setTitle("RECORD", forState: .Normal)
+            //buttonLabel.setTitle("RECORD", forState: .Normal)
+            
             let alert = UIAlertController(title: "Recording Failed", message: "There was a problem saving the recording, it could be a space issue", preferredStyle: .Alert)
             let okButton = UIAlertAction(title: "Ok", style: .Default, handler: nil)
             alert.addAction(okButton)
@@ -313,6 +307,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     }
     
     func createLog(){
+        
         let file = "log.txt"
         let text = "Speed LOG"
         
@@ -366,12 +361,17 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus){
         
+        print("CHANGED")
         if status == .AuthorizedWhenInUse || status == .Restricted || status == .Denied {
             backgroundAlert()
+            print("NOT ALWAYS")
         } else if status == .AuthorizedAlways {
             setupLocationManager()
             setupSession()
             setupButtons()
+            print("ALWAYS")
+        } else if status == .NotDetermined {
+            locationManager.requestAlwaysAuthorization()
         }
     }
     
@@ -407,15 +407,30 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     func getAudioURL() -> NSURL {
         
-        let path = getCacheDirectory().stringByAppendingPathComponent(fileName)
+        let path = getCacheDirectory().stringByAppendingPathComponent(recordingFileName)
         let filePath = NSURL(fileURLWithPath: path)
         return filePath
     }
     
     func getFileURL(file: String) -> NSURL {
+        
         let path = getCacheDirectory().stringByAppendingPathComponent(file)
         let filePath = NSURL(fileURLWithPath: path)
         return filePath
+    }
+    
+    func checkFile(filename: String){
+        
+        let path = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
+        let url = NSURL(fileURLWithPath: path)
+        let filePath = url.URLByAppendingPathComponent(filename).path!
+        let fileManager = NSFileManager.defaultManager()
+        if fileManager.fileExistsAtPath(filePath) {
+            print("log available")
+        } else {
+            print("no log file")
+            createLog()
+        }
     }
     
     // Shake
