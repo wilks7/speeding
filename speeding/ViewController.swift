@@ -112,6 +112,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         checkFile("log.txt")
         setupButtons()
         setupLocationManager()
+        UIApplication.sharedApplication().idleTimerDisabled = true
     }//viewdidload
     
     override func viewDidAppear(animated: Bool) {
@@ -242,7 +243,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         if success {
             //buttonLabel.setTitle("RE-RECORD", forState: .Normal)
             
-            let alert = UIAlertController(title: "Succesfully Recorded!", message: "Every new audio recording overwrites the last, to ensure your recording is not overwritten we recommend sending yourself a copy now or with the share button later.", preferredStyle: .Alert)
+            let alert = UIAlertController(title: "Succesfully Recorded!", message: "Every new audio recording overwrites the last, to ensure the recording you want is not overwritten we recommend sending a copy now, would you like to send yourself a copy?", preferredStyle: .Alert)
             let yesButton = UIAlertAction(title: "Yes", style: .Default) { (action) in
                 self.shareLog()
             }
@@ -280,7 +281,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
         let speed = newLocation.speed
-        let speedKph = speed*3.6
+        let speedKph = Int(round(speed*3.6))
         let speedMph = Int(round(speed*2.23694))
         
         let formatter = NSDateFormatter()
