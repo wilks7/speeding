@@ -113,7 +113,12 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         setupButtons()
         setupLocationManager()
         UIApplication.sharedApplication().idleTimerDisabled = true
-    }//viewdidload
+    }
+    
+    override func viewDidDisappear(animated: Bool) {
+        super.viewDidDisappear(animated)
+        UIApplication.sharedApplication().idleTimerDisabled = false
+    }
     
     override func viewDidAppear(animated: Bool) {
         super.viewDidAppear(animated)
@@ -138,7 +143,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         redDotOutlet.hidden = true
         speedLabel.font = UIFont(name: "DBLCDTempBlack", size: 150.0)
         
-        if CLLocationManager.authorizationStatus() != .AuthorizedAlways {
+        if CLLocationManager.authorizationStatus() != .AuthorizedAlways && CLLocationManager.authorizationStatus() != .AuthorizedWhenInUse {
             speedLabel.text = "--"
             mphTextLabel.hidden = true
         } else {
@@ -366,10 +371,16 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus){
         
         print("CHANGED")
-        if status == .AuthorizedWhenInUse || status == .Restricted || status == .Denied {
+        if status == .Restricted || status == .Denied {
             backgroundAlert()
-            print("NOT ALWAYS")
+            print("location is Resricted or Denied")
         } else if status == .AuthorizedAlways {
+            setupLocationManager()
+            setupSession()
+            setupButtons()
+            print("ALWAYS")
+        } else if status == .AuthorizedWhenInUse {
+            onlyOpenAlert()
             setupLocationManager()
             setupSession()
             setupButtons()
@@ -383,8 +394,27 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     func backgroundAlert(){
         let alertController = UIAlertController(
+            title: "Location Access Disabled",
+            message: "In order to track and log your speed while this app is open and continue logging in the background please open this app's location settings and set location access to 'Always'.",
+            preferredStyle: .Alert)
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .Default, handler: nil)
+        alertController.addAction(cancelAction)
+        
+        let openAction = UIAlertAction(title: "Open Settings", style: .Default) { (action) in
+            if let url = NSURL(string:UIApplicationOpenSettingsURLString) {
+                UIApplication.sharedApplication().openURL(url)
+            }
+        }
+        alertController.addAction(openAction)
+        
+        self.presentViewController(alertController, animated: true, completion: nil)
+    }
+    
+    func onlyOpenAlert(){
+        let alertController = UIAlertController(
             title: "Background Location Access Disabled",
-            message: "In order to track and log your speed please open this app's settings and set location access to 'Always'.",
+            message: "If you would like the app to continue tracking your speed while the app is put in the background please open this app's location settings and set location access to 'Always'. .",
             preferredStyle: .Alert)
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .Default, handler: nil)
