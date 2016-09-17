@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>Watch.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 		<key>speeding.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -23,6 +28,11 @@
 			<true/>
 		</dict>
 		<key>177085B31CEA4B9C00C189F8</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>1F2E3ED81D8DE89700E26000</key>
 		<dict>
 			<key>primary</key>
 			<true/>

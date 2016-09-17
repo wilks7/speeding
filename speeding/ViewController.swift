@@ -22,7 +22,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     let recordingFileName = "recording.m4a"
     
     var redText: Bool {
-        if let recording = NSUserDefaults.standardUserDefaults().valueForKey("redText") as? Bool{
+        if let recording = UserDefaults.standard.value(forKey: "redText") as? Bool{
             return recording
         } else {
             return true
@@ -30,7 +30,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     }
     
     var shake: Bool {
-        if let shake = NSUserDefaults.standardUserDefaults().valueForKey("shake") as? Bool {
+        if let shake = UserDefaults.standard.value(forKey: "shake") as? Bool {
             return shake
         } else {
             return false
@@ -38,7 +38,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     }
     
     var miles: Bool{
-        if let miles = NSUserDefaults.standardUserDefaults().valueForKey("miles") as? Bool {
+        if let miles = UserDefaults.standard.value(forKey: "miles") as? Bool {
             return miles
         } else {
             return true
@@ -46,7 +46,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     }
     
     var dashMode: Bool {
-        if let dash = NSUserDefaults.standardUserDefaults().valueForKey("dashMode") as? Bool {
+        if let dash = UserDefaults.standard.value(forKey: "dashMode") as? Bool {
             return dash
         } else {
             return false
@@ -65,11 +65,11 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     @IBOutlet weak var redDotOutlet: UIView!
     
-    @IBAction func unwindToVC(segue: UIStoryboardSegue) {
+    @IBAction func unwindToVC(_ segue: UIStoryboardSegue) {
         setupButtons()
     }
     
-    @IBAction func buttonPressed(sender: AnyObject) {
+    @IBAction func buttonPressed(_ sender: AnyObject) {
 //        if audioRecorder == nil {
 //            startRecording()
 //        }
@@ -78,10 +78,10 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
 //        }
     }
     
-    @IBAction func playButtonTapped(sender: AnyObject) {
+    @IBAction func playButtonTapped(_ sender: AnyObject) {
         //playRecording()
         do {
-        let result = try String(contentsOfURL: getFileURL("log.txt"))
+        let result = try String(contentsOf: getFileURL("log.txt"))
         print(result)
 
         } catch {
@@ -89,15 +89,15 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         }
     }
     
-    @IBAction func settingsTapped(sender: AnyObject) {
-        self.performSegueWithIdentifier("showSettings", sender: self)
+    @IBAction func settingsTapped(_ sender: AnyObject) {
+        self.performSegue(withIdentifier: "showSettings", sender: self)
     }
     
-    @IBAction func shareTapped(sender: AnyObject) {
+    @IBAction func shareTapped(_ sender: AnyObject) {
         shareLog()
     }
     
-    override func touchesEnded(touches: Set<UITouch>, withEvent event: UIEvent?) {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         if audioRecorder == nil {
             setupSession()
             startRecording()
@@ -112,21 +112,37 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         checkFile("log.txt")
         setupButtons()
         setupLocationManager()
-        UIApplication.sharedApplication().idleTimerDisabled = true
+        UIApplication.shared.isIdleTimerDisabled = true
+        
+        
     }
     
-    override func viewDidDisappear(animated: Bool) {
+    func checkFirstLaunch() {
+        
+        let launchedBefore = UserDefaults.standard.bool(forKey: "launchedBefore")
+        
+        if !launchedBefore {
+            let alert = UIAlertController(title: "Welcome", message: "This app logs your speed to a text file and will record audio when you tap on the screen as well. If the app is running it will log your speed to the file but will only record audio when the text is red or has a red dot by tapping on the screenn", preferredStyle: .alert)
+            let okButton = UIAlertAction(title: "OK!", style: .default, handler: nil)
+            alert.addAction(okButton)
+            present(alert, animated: true, completion: nil)
+            UserDefaults.standard.set(true, forKey: "launchedBefore")
+        }
+
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
-        UIApplication.sharedApplication().idleTimerDisabled = false
+        UIApplication.shared.isIdleTimerDisabled = false
     }
     
-    override func viewDidAppear(animated: Bool) {
+    override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        if CLLocationManager.authorizationStatus() == .NotDetermined {
+        if CLLocationManager.authorizationStatus() == .notDetermined {
             locationManager.requestAlwaysAuthorization()
         }
     }
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
 
@@ -138,23 +154,23 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     }
     
     func setupButtons(){
-        buttonLabel.hidden = true
-        playButtonLabel.hidden = true
-        redDotOutlet.hidden = true
+        buttonLabel.isHidden = true
+        playButtonLabel.isHidden = true
+        redDotOutlet.isHidden = true
         speedLabel.font = UIFont(name: "DBLCDTempBlack", size: 150.0)
         
-        if CLLocationManager.authorizationStatus() != .AuthorizedAlways && CLLocationManager.authorizationStatus() != .AuthorizedWhenInUse {
+        if CLLocationManager.authorizationStatus() != .authorizedAlways && CLLocationManager.authorizationStatus() != .authorizedWhenInUse {
             speedLabel.text = "--"
-            mphTextLabel.hidden = true
+            mphTextLabel.isHidden = true
         } else {
             speedLabel.text = "0"
-            mphTextLabel.hidden = false
+            mphTextLabel.isHidden = false
         }
         
         if self.shake {
-            navBarOutlet.hidden = false
+            navBarOutlet.isHidden = false
         } else {
-            navBarOutlet.hidden = false
+            navBarOutlet.isHidden = false
         }
         
         if self.miles {
@@ -164,9 +180,9 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         }
         
         if self.dashMode {
-            self.view.transform = CGAffineTransformMakeScale(-1, 1)
+            self.view.transform = CGAffineTransform(scaleX: -1, y: 1)
         } else {
-            self.view.transform = CGAffineTransformMakeScale(1, 1)
+            self.view.transform = CGAffineTransform(scaleX: 1, y: 1)
         }
     }
     
@@ -180,7 +196,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
             try recordingSession.setCategory(AVAudioSessionCategoryPlayAndRecord)
             try recordingSession.setActive(true)
             recordingSession.requestRecordPermission() { (allowed: Bool) -> Void in
-                dispatch_async(dispatch_get_main_queue()) {
+                DispatchQueue.main.async {
                     if allowed {
                         print("Got persmission")
                     } else {
@@ -209,23 +225,23 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
             AVSampleRateKey: 12000.0,
             AVNumberOfChannelsKey: 1 as NSNumber,
-            AVEncoderAudioQualityKey: AVAudioQuality.High.rawValue
-        ]
+            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+        ] as [String : Any]
         
         do {
             
-            audioRecorder = try AVAudioRecorder(URL: audioUrl, settings: smallSettings)
+            audioRecorder = try AVAudioRecorder(url: audioUrl, settings: smallSettings)
             audioRecorder.delegate = self
             audioRecorder.record()
             
             if redText {
-                speedLabel.textColor = UIColor.redColor()
-                mphTextLabel.textColor = UIColor.redColor()
+                speedLabel.textColor = UIColor.red
+                mphTextLabel.textColor = UIColor.red
             } else {
-                redDotOutlet.hidden = false
+                redDotOutlet.isHidden = false
             }
             
-            buttonLabel.setTitle("STOP", forState: .Normal)
+            buttonLabel.setTitle("STOP", for: UIControlState())
             print("...recording...")
             
         } catch {
@@ -234,36 +250,36 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     }
     
     
-    func finishRecording(success success: Bool) {
+    func finishRecording(success: Bool) {
         audioRecorder.stop()
         audioRecorder = nil
         if redText {
-            speedLabel.textColor = UIColor.whiteColor()
-            mphTextLabel.textColor = UIColor.whiteColor()
+            speedLabel.textColor = UIColor.white
+            mphTextLabel.textColor = UIColor.white
         } else {
-            redDotOutlet.hidden = true
+            redDotOutlet.isHidden = true
         }
         print("ended recording")
         
         if success {
             //buttonLabel.setTitle("RE-RECORD", forState: .Normal)
             
-            let alert = UIAlertController(title: "Succesfully Recorded!", message: "Every new audio recording overwrites the last, to ensure the recording you want is not overwritten we recommend sending a copy now, would you like to send yourself a copy?", preferredStyle: .Alert)
-            let yesButton = UIAlertAction(title: "Yes", style: .Default) { (action) in
+            let alert = UIAlertController(title: "Succesfully Recorded!", message: "Every new audio recording overwrites the last, to ensure the recording you want is not overwritten we recommend sending a copy now, would you like to send yourself a copy?", preferredStyle: .alert)
+            let yesButton = UIAlertAction(title: "Yes", style: .default) { (action) in
                 self.shareLog()
             }
-            let noButton = UIAlertAction(title: "No", style: .Default, handler: nil)
+            let noButton = UIAlertAction(title: "No", style: .default, handler: nil)
             alert.addAction(noButton)
             alert.addAction(yesButton)
-            presentViewController(alert, animated: true, completion: nil)
+            present(alert, animated: true, completion: nil)
             
         } else {
             //buttonLabel.setTitle("RECORD", forState: .Normal)
             
-            let alert = UIAlertController(title: "Recording Failed", message: "There was a problem saving the recording, it could be a space issue", preferredStyle: .Alert)
-            let okButton = UIAlertAction(title: "Ok", style: .Default, handler: nil)
+            let alert = UIAlertController(title: "Recording Failed", message: "There was a problem saving the recording, it could be a space issue", preferredStyle: .alert)
+            let okButton = UIAlertAction(title: "Ok", style: .default, handler: nil)
             alert.addAction(okButton)
-            presentViewController(alert, animated: true, completion: nil)
+            present(alert, animated: true, completion: nil)
         }
     }
     
@@ -271,7 +287,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         let url = getAudioURL()
         
         do {
-            audioPlayer = try AVAudioPlayer(contentsOfURL: url, fileTypeHint: ".m4a")
+            audioPlayer = try AVAudioPlayer(contentsOf: url, fileTypeHint: ".m4a")
             audioPlayer.delegate = self
             audioPlayer.prepareToPlay()
             audioPlayer.volume = 5.0
@@ -284,14 +300,16 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     }
     
     
-    func locationManager(manager: CLLocationManager, didUpdateToLocation newLocation: CLLocation, fromLocation oldLocation: CLLocation) {
-        let speed = newLocation.speed
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        guard let location = locations.last else {return;}
+        
+        let speed = location.speed
         let speedKph = Int(round(speed*3.6))
         let speedMph = Int(round(speed*2.23694))
         
-        let formatter = NSDateFormatter()
+        let formatter = DateFormatter()
         formatter.dateFormat = "MM.dd.yyyy-hh:mm:ss"
-        let todayString = formatter.stringFromDate(NSDate())
+        let todayString = formatter.string(from: Date())
         
         var fullLog = ""
         
@@ -308,7 +326,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
                 fullLog = "\(todayString) | \(speedKph) kph"
             }
         }
-
+        
         logSpeed(fullLog)
     }
     
@@ -320,34 +338,37 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         let path = getFileURL(file)
             
         do {
-            try text.writeToURL(path, atomically: false, encoding: NSUTF8StringEncoding)
+            try text.write(to: path, atomically: false, encoding: String.Encoding.utf8)
         } catch {"ERROR: creating log"}
     }
     
-    func logSpeed(logString: String){
+    func logSpeed(_ logString: String){
         do {
             let url = getFileURL("log.txt")
-            try logString.appendLineToURL(url)
+            let stringSpace = logString + "\n"
+            //let data = stringSpace.data(using: String.Encoding.utf8)!
+            try stringSpace.appendToURL(url)
         } catch {
             print("ERROR: could not write to log file")
         }
     }
     
+
     func shareLog(){
         let log = getFileURL("log.txt")
         let recording = getFileURL("recording.m4a")
         let objectsToShare = [log,recording]
         let activityVC = UIActivityViewController(activityItems: objectsToShare, applicationActivities: nil)
         
-        self.presentViewController(activityVC, animated: true, completion: nil)
+        self.present(activityVC, animated: true, completion: nil)
     }
     
     // Segue
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         
         if segue.identifier == "showSettings"{
-            let vc = segue.destinationViewController as! SettingsTableViewController
+            let vc = segue.destination as! SettingsTableViewController
             
             let controller = vc.popoverPresentationController
             
@@ -359,33 +380,33 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     // MARK: - PopOver Delegate
     
-    func adaptivePresentationStyleForPresentationController(controller: UIPresentationController) -> UIModalPresentationStyle {
-        return .None
+    func adaptivePresentationStyle(for controller: UIPresentationController) -> UIModalPresentationStyle {
+        return .none
     }
-    func popoverPresentationControllerDidDismissPopover(popoverPresentationController: UIPopoverPresentationController) {
+    func popoverPresentationControllerDidDismissPopover(_ popoverPresentationController: UIPopoverPresentationController) {
         setupButtons()
     }
     
     // MARK: - CoreLocation Delegate
     
-    func locationManager(manager: CLLocationManager, didChangeAuthorizationStatus status: CLAuthorizationStatus){
+    func locationManager(_ manager: CLLocationManager, didChangeAuthorization status: CLAuthorizationStatus){
         
         print("CHANGED")
-        if status == .Restricted || status == .Denied {
+        if status == .restricted || status == .denied {
             backgroundAlert()
             print("location is Resricted or Denied")
-        } else if status == .AuthorizedAlways {
+        } else if status == .authorizedAlways {
             setupLocationManager()
             setupSession()
             setupButtons()
             print("ALWAYS")
-        } else if status == .AuthorizedWhenInUse {
+        } else if status == .authorizedWhenInUse {
             onlyOpenAlert()
             setupLocationManager()
             setupSession()
             setupButtons()
             print("ALWAYS")
-        } else if status == .NotDetermined {
+        } else if status == .notDetermined {
             locationManager.requestAlwaysAuthorization()
         }
     }
@@ -396,70 +417,72 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         let alertController = UIAlertController(
             title: "Location Access Disabled",
             message: "In order to track and log your speed while this app is open and continue logging in the background please open this app's location settings and set location access to 'Always'.",
-            preferredStyle: .Alert)
+            preferredStyle: .alert)
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Default, handler: nil)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
         alertController.addAction(cancelAction)
         
-        let openAction = UIAlertAction(title: "Open Settings", style: .Default) { (action) in
-            if let url = NSURL(string:UIApplicationOpenSettingsURLString) {
-                UIApplication.sharedApplication().openURL(url)
+        let openAction = UIAlertAction(title: "Open Settings", style: .default) { (action) in
+            if let url = URL(string:UIApplicationOpenSettingsURLString) {
+                UIApplication.shared.openURL(url)
             }
         }
         alertController.addAction(openAction)
         
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     func onlyOpenAlert(){
         let alertController = UIAlertController(
             title: "Background Location Access Disabled",
             message: "If you would like the app to continue tracking your speed while the app is put in the background please open this app's location settings and set location access to 'Always'. .",
-            preferredStyle: .Alert)
+            preferredStyle: .alert)
         
-        let cancelAction = UIAlertAction(title: "Cancel", style: .Default, handler: nil)
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default, handler: nil)
         alertController.addAction(cancelAction)
         
-        let openAction = UIAlertAction(title: "Open Settings", style: .Default) { (action) in
-            if let url = NSURL(string:UIApplicationOpenSettingsURLString) {
-                UIApplication.sharedApplication().openURL(url)
+        let openAction = UIAlertAction(title: "Open Settings", style: .default) { (action) in
+            if let url = URL(string:UIApplicationOpenSettingsURLString) {
+                UIApplication.shared.openURL(url)
             }
         }
         alertController.addAction(openAction)
         
-        self.presentViewController(alertController, animated: true, completion: nil)
+        self.present(alertController, animated: true, completion: nil)
     }
     
     
     // File Helpers
     
-    func getCacheDirectory() -> AnyObject {
+    func getCacheDirectory() -> String {
         
-        let paths = NSSearchPathForDirectoriesInDomains( NSSearchPathDirectory.DocumentDirectory,  NSSearchPathDomainMask.UserDomainMask, true)
+        let paths = NSSearchPathForDirectoriesInDomains( FileManager.SearchPathDirectory.documentDirectory,  FileManager.SearchPathDomainMask.userDomainMask, true)
         return paths[0]
     }
     
-    func getAudioURL() -> NSURL {
+    func getAudioURL() -> URL {
         
-        let path = getCacheDirectory().stringByAppendingPathComponent(recordingFileName)
-        let filePath = NSURL(fileURLWithPath: path)
+        let path = getCacheDirectory()
+        let pathUrl = URL(fileURLWithPath: path)
+        let filePath = pathUrl.appendingPathComponent(recordingFileName)
         return filePath
     }
     
-    func getFileURL(file: String) -> NSURL {
+    func getFileURL(_ file: String) -> URL {
         
-        let path = getCacheDirectory().stringByAppendingPathComponent(file)
-        let filePath = NSURL(fileURLWithPath: path)
+        let path = getCacheDirectory()
+        let pathUrl = URL(fileURLWithPath: path)
+        let filePath = pathUrl.appendingPathComponent(file)
         return filePath
     }
     
-    func checkFile(filename: String){
+    func checkFile(_ filename: String){
         
-        let path = NSSearchPathForDirectoriesInDomains(.DocumentDirectory, .UserDomainMask, true)[0] as String
-        let url = NSURL(fileURLWithPath: path)
-        let filePath = url.URLByAppendingPathComponent(filename).path!
-        let fileManager = NSFileManager.defaultManager()
-        if fileManager.fileExistsAtPath(filePath) {
+        let path = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0] as String
+        let url = URL(fileURLWithPath: path)
+        let filePath = url.appendingPathComponent(filename).path
+        let fileManager = FileManager.default
+        if fileManager.fileExists(atPath: filePath) {
             print("log available")
         } else {
             print("no log file")
@@ -469,21 +492,21 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     // Shake
     
-    override func canBecomeFirstResponder() -> Bool {
+    override var canBecomeFirstResponder : Bool {
         return true
     }
     
-    override func motionBegan(motion: UIEventSubtype, withEvent event: UIEvent?) {
+    override func motionBegan(_ motion: UIEventSubtype, with event: UIEvent?) {
         
-        if(event!.subtype == UIEventSubtype.MotionShake) {
+        if(event!.subtype == UIEventSubtype.motionShake) {
             if self.shake {
-                if navBarOutlet.hidden {
-                    navBarOutlet.hidden = false
+                if navBarOutlet.isHidden {
+                    navBarOutlet.isHidden = false
                 } else {
-                    navBarOutlet.hidden = true
+                    navBarOutlet.isHidden = true
                 }
             } else {
-                navBarOutlet.hidden = false
+                navBarOutlet.isHidden = false
             }
             print("shake shake shake")
         }
@@ -492,28 +515,27 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
 }//class
 
 
+
 extension String {
-    func appendLineToURL(fileURL: NSURL) throws {
-        try self.stringByAppendingString("\n").appendToURL(fileURL)
-    }
     
-    func appendToURL(fileURL: NSURL) throws {
-        let data = self.dataUsingEncoding(NSUTF8StringEncoding)!
+    func appendToURL(_ fileURL: URL) throws {
+        let data = self.data(using: String.Encoding.utf8)!
         try data.appendToURL(fileURL)
     }
 }
 
-extension NSData {
-    func appendToURL(fileURL: NSURL) throws {
-        if let fileHandle = try? NSFileHandle(forWritingToURL: fileURL) {
+
+extension Data {
+    func appendToURL(_ fileURL: URL) throws {
+        if let fileHandle = try? FileHandle(forWritingTo: fileURL) {
             defer {
                 fileHandle.closeFile()
             }
             fileHandle.seekToEndOfFile()
-            fileHandle.writeData(self)
+            fileHandle.write(self)
         }
         else {
-            try writeToURL(fileURL, options: .DataWritingAtomic)
+            try write(to: fileURL, options: .atomic)
         }
     }
 }

@@ -16,49 +16,49 @@ class SettingsTableViewController: UITableViewController {
     @IBOutlet weak var locationButtonOutlet: UIButton!
     @IBOutlet weak var dashSwitchOutlet: UISwitch!
     
-    @IBAction func shakeSwitchChanged(sender: AnyObject) {
-        if shakeSwitchOutlet.on {
-            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "shake")
+    @IBAction func shakeSwitchChanged(_ sender: AnyObject) {
+        if shakeSwitchOutlet.isOn {
+            UserDefaults.standard.set(true, forKey: "shake")
             print("switched on")
         } else {
-            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "shake")
+            UserDefaults.standard.set(false, forKey: "shake")
             print("switched off")
         }
     }
     
-    @IBAction func dashSwitchChanged(sender: AnyObject) {
-        if dashSwitchOutlet.on {
-            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "dashMode")
+    @IBAction func dashSwitchChanged(_ sender: AnyObject) {
+        if dashSwitchOutlet.isOn {
+            UserDefaults.standard.set(true, forKey: "dashMode")
         } else {
-            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "dashMode")
+            UserDefaults.standard.set(false, forKey: "dashMode")
         }
     }
     
     
-    @IBAction func exitButtonTapped(sender: AnyObject) {
-        dismissViewControllerAnimated(false, completion: nil)
+    @IBAction func exitButtonTapped(_ sender: AnyObject) {
+        dismiss(animated: false, completion: nil)
     }
     
-    @IBAction func locationButtonTapped(sender: AnyObject) {
-        if let url = NSURL(string:UIApplicationOpenSettingsURLString) {
-            UIApplication.sharedApplication().openURL(url)
+    @IBAction func locationButtonTapped(_ sender: AnyObject) {
+        if let url = URL(string:UIApplicationOpenSettingsURLString) {
+            UIApplication.shared.openURL(url)
         }
     }
     
     
-    @IBAction func redSegmentChanged(sender: AnyObject) {
+    @IBAction func redSegmentChanged(_ sender: AnyObject) {
         if redSegmentOutlet.selectedSegmentIndex == 0 {
-            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "redText")
+            UserDefaults.standard.set(true, forKey: "redText")
         } else {
-            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "redText")
+            UserDefaults.standard.set(false, forKey: "redText")
         }
     }
     
-    @IBAction func distanceSegmentChanged(sender: AnyObject) {
+    @IBAction func distanceSegmentChanged(_ sender: AnyObject) {
         if distanceSegmentOutlet.selectedSegmentIndex == 0 {
-            NSUserDefaults.standardUserDefaults().setBool(true, forKey: "miles")
+            UserDefaults.standard.set(true, forKey: "miles")
         } else {
-            NSUserDefaults.standardUserDefaults().setBool(false, forKey: "miles")
+            UserDefaults.standard.set(false, forKey: "miles")
         }
     }
     
@@ -67,29 +67,29 @@ class SettingsTableViewController: UITableViewController {
         super.viewDidLoad()
         self.view.layer.borderWidth = 2.5
         self.view.layer.cornerRadius = 5
-        self.view.layer.borderColor = UIColor.whiteColor().CGColor
+        self.view.layer.borderColor = UIColor.white.cgColor
         
         locationButtonOutlet.layer.borderWidth = 1
         locationButtonOutlet.layer.cornerRadius = 5
-        locationButtonOutlet.layer.borderColor = UIColor.whiteColor().CGColor
+        locationButtonOutlet.layer.borderColor = UIColor.white.cgColor
         
     }
     
-    override func viewWillAppear(animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupButtons()
     }
     
     func setupButtons(){
         
-        if let shake = NSUserDefaults.standardUserDefaults().valueForKey("shake") as? Bool{
+        if let shake = UserDefaults.standard.value(forKey: "shake") as? Bool{
             if shake {
                 shakeSwitchOutlet.setOn(true, animated: false)
             } else {
                 shakeSwitchOutlet.setOn(false, animated: false)
             }
         }
-        if let recording = NSUserDefaults.standardUserDefaults().valueForKey("redText") as? Bool{
+        if let recording = UserDefaults.standard.value(forKey: "redText") as? Bool{
             if recording {
                 redSegmentOutlet.selectedSegmentIndex = 0
             } else {
@@ -97,7 +97,7 @@ class SettingsTableViewController: UITableViewController {
             }
         }
         
-        if let distance = NSUserDefaults.standardUserDefaults().valueForKey("miles") as? Bool {
+        if let distance = UserDefaults.standard.value(forKey: "miles") as? Bool {
             if distance {
                 distanceSegmentOutlet.selectedSegmentIndex = 0
             } else {
@@ -105,7 +105,7 @@ class SettingsTableViewController: UITableViewController {
             }
         }
         
-        if let dash = NSUserDefaults.standardUserDefaults().valueForKey("dashMode") as? Bool {
+        if let dash = UserDefaults.standard.value(forKey: "dashMode") as? Bool {
             if dash {
                 dashSwitchOutlet.setOn(true, animated: false)
             } else {
