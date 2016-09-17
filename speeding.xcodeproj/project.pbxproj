@@ -737,6 +737,7 @@
 				1F2E3EF61D8DE89700E26000 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1F2E3EF81D8DE89700E26000 /* Build configuration list for PBXNativeTarget "Watch" */ = {
 			isa = XCConfigurationList;
@@ -745,6 +746,7 @@
 				1F2E3EFA1D8DE89700E26000 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
