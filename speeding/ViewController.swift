@@ -113,8 +113,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         setupButtons()
         setupLocationManager()
         UIApplication.shared.isIdleTimerDisabled = true
-        
-        
     }
     
     func checkFirstLaunch() {
@@ -128,7 +126,6 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
             present(alert, animated: true, completion: nil)
             UserDefaults.standard.set(true, forKey: "launchedBefore")
         }
-
     }
     
     override func viewDidDisappear(_ animated: Bool) {
