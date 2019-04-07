@@ -16,6 +16,20 @@ class FileController {
         return paths[0]
     }
     
+    static func getAllDocuments()-> [URL]{
+        
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        
+        do {
+            let fileURLs = try FileManager.default.contentsOfDirectory(at: documentsURL, includingPropertiesForKeys: nil)
+            print(fileURLs)
+            return fileURLs
+        } catch {
+            print("Error while enumerating files \(documentsURL.path): \(error.localizedDescription)")
+            return []
+        }
+    }
+    
     static func getFileURL(_ file: String) -> URL {
         return getDocumentsDirectory().appendingPathComponent(file)
     }

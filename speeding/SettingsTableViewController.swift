@@ -41,7 +41,7 @@ class SettingsTableViewController: UITableViewController {
     
     @IBAction func locationButtonTapped(_ sender: AnyObject) {
         if let url = URL(string:UIApplication.openSettingsURLString) {
-            UIApplication.shared.openURL(url)
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
         }
     }
     

@@ -16,7 +16,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     var audioPlayer: AVAudioPlayer!
     var locationManager = CLLocationManager()
 
-    let kFileName = "recording.m4a"
+    var fileName = "recording.m4a"
     
     var recording: Bool = false
     var redText: Bool = false
@@ -54,7 +54,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     }
     
     @IBAction func shareTapped(_ sender: AnyObject) {
-        shareLog()
+        //shareLog()
     }
     
     override func viewDidLoad() {
@@ -62,7 +62,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         FileController.checkFile("log.txt")
         setupButtons()
         setupLocationManager()
-        setupRecorder()
+        //setupRecorder()
         UIApplication.shared.isIdleTimerDisabled = true
     }
     
@@ -131,7 +131,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     func setupPlayer(){
         
-        let audioFilename = FileController.getDocumentsDirectory().appendingPathComponent(kFileName)
+        let audioFilename = FileController.getDocumentsDirectory().appendingPathComponent(fileName)
         
         do {
             audioPlayer = try AVAudioPlayer(contentsOf: audioFilename)
@@ -144,16 +144,22 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         
     }
     
-    func setupRecorder(){
-        let audioFilename = FileController.getDocumentsDirectory().appendingPathComponent(kFileName)
+    
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         
-        let maxSettings = [//filename should be .caf
-            AVFormatIDKey: kAudioFormatAppleLossless,
-            AVEncoderAudioQualityKey : AVAudioQuality.max.rawValue,
-            AVEncoderBitRateKey : 320000,
-            AVNumberOfChannelsKey: 2 as NSNumber,
-            AVSampleRateKey : 44100.0
-            ] as [String:Any]
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM.dd.yyyy-hh:mm:ss"
+        fileName = formatter.string(from: Date()) + ".m4a"
+        
+        let audioFilename = FileController.getDocumentsDirectory().appendingPathComponent(fileName)
+        
+        //        let maxSettings = [//filename should be .caf
+        //            AVFormatIDKey: kAudioFormatAppleLossless,
+        //            AVEncoderAudioQualityKey : AVAudioQuality.max.rawValue,
+        //            AVEncoderBitRateKey : 320000,
+        //            AVNumberOfChannelsKey: 2 as NSNumber,
+        //            AVSampleRateKey : 44100.0
+        //            ] as [String:Any]
         
         let smallSettings = [//filename should be .m4a
             AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
@@ -169,10 +175,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         } catch {
             print(error)
         }
-    }
-
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        
         if !recording {
             audioRecorder.record()
             
@@ -311,7 +314,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         
         let openAction = UIAlertAction(title: "Open Settings", style: .default) { (action) in
             if let url = URL(string:UIApplication.openSettingsURLString) {
-                UIApplication.shared.openURL(url)
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         }
         alertController.addAction(openAction)
@@ -330,7 +333,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         
         let openAction = UIAlertAction(title: "Open Settings", style: .default) { (action) in
             if let url = URL(string:UIApplication.openSettingsURLString) {
-                UIApplication.shared.openURL(url)
+                UIApplication.shared.open(url, options: [:], completionHandler: nil)
             }
         }
         alertController.addAction(openAction)
