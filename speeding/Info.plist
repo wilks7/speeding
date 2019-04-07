@@ -26,6 +26,8 @@
 	<true/>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>We need your location to calculate and log your speed</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>We need your location to calculate and log your speed</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>We need your location to calculate and log your speed</string>
 	<key>NSMicrophoneUsageDescription</key>

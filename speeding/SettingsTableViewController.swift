@@ -36,11 +36,11 @@ class SettingsTableViewController: UITableViewController {
     
     
     @IBAction func exitButtonTapped(_ sender: AnyObject) {
-        dismiss(animated: false, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
     
     @IBAction func locationButtonTapped(_ sender: AnyObject) {
-        if let url = URL(string:UIApplicationOpenSettingsURLString) {
+        if let url = URL(string:UIApplication.openSettingsURLString) {
             UIApplication.shared.openURL(url)
         }
     }
@@ -65,6 +65,16 @@ class SettingsTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        buttonLayout()
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        setupButtons()
+    }
+    
+    func buttonLayout(){
         self.view.layer.borderWidth = 2.5
         self.view.layer.cornerRadius = 5
         self.view.layer.borderColor = UIColor.white.cgColor
@@ -72,12 +82,6 @@ class SettingsTableViewController: UITableViewController {
         locationButtonOutlet.layer.borderWidth = 1
         locationButtonOutlet.layer.cornerRadius = 5
         locationButtonOutlet.layer.borderColor = UIColor.white.cgColor
-        
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        setupButtons()
     }
     
     func setupButtons(){
