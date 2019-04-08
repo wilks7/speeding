@@ -9,21 +9,25 @@
 import UIKit
 import AVFoundation
 
-class LogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class LogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, AVAudioPlayerDelegate {
 
+    
+    var isPlaying: Bool = false
+    
     @IBAction func shareTapped(_ sender: Any) {
     }
     
     @IBAction func segmentChanged(_ sender: Any) {
         
         if segmentOutlet.selectedSegmentIndex == 0 {
-            dataSource = speedList
+            playerView.isHidden = true
         } else if segmentOutlet.selectedSegmentIndex == 1 {
             dataSource = audioList
             setupAudioPlayer(url: dataSource[0])
-            setSliderValue()
             _ = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateSlider), userInfo: nil, repeats: true)
-
+        } else if segmentOutlet.selectedSegmentIndex == 2 {
+            dataSource = videoList
+            playerView.isHidden = true
         }
         tableView.reloadData()
     }
@@ -31,12 +35,39 @@ class LogViewController: UIViewController, UITableViewDataSource, UITableViewDel
     @IBAction func sliderChanged(_ sender: Any) {
         
         audioPlayer.stop()
+        audioPlayer.delegate = self
         audioPlayer.currentTime = TimeInterval(sliderOutlet.value)
         audioPlayer.prepareToPlay()
         audioPlayer.play()
+        if audioPlayer.isPlaying {
+            playButton.setTitle("Pause", for: .normal)
+        } else {
+            playButton.setTitle("Play", for: .normal)
+        }
+        
+    }
+    @IBOutlet weak var playButton: UIButton!
+    @IBAction func playTapped(_ sender: Any) {
+        
+        if audioPlayer.isPlaying {
+            playButton.setTitle("Play", for: .normal)
+            audioPlayer.pause()
+        } else {
+            playButton.setTitle("Pause", for: .normal)
+            audioPlayer.play()
+        }
         
     }
     
+    
+    @IBAction func doneTapped(_ sender: Any) {
+        
+        self.dismiss(animated: true, completion: nil)
+        
+    }
+    @IBOutlet weak var playerView: UIView!
+    
+    @IBOutlet weak var timeStamp: UILabel!
     
     @IBOutlet weak var sliderOutlet: UISlider!
     
@@ -49,23 +80,25 @@ class LogViewController: UIViewController, UITableViewDataSource, UITableViewDel
     var dataSource:[URL] = []
     
     var audioList:[URL] = []
-    var speedList:[URL] = []
+    var speedList:[String] = []
+    var videoList:[URL] = []
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
         loadData()
         
         if segmentOutlet.selectedSegmentIndex == 0 {
-            dataSource = speedList
+            playerView.isHidden = true
+            speedList = FileController.speedLogs
         } else if segmentOutlet.selectedSegmentIndex == 1 {
             dataSource = audioList
             setupAudioPlayer(url: dataSource[0])
-            _ = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(updateSlider), userInfo: nil, repeats: true)
+            _ = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateSlider), userInfo: nil, repeats: true)
+        } else if segmentOutlet.selectedSegmentIndex == 2 {
+            dataSource = videoList
+            playerView.isHidden = true
         }
-        
-        
-
-
         tableView.reloadData()
     }
     
@@ -79,7 +112,7 @@ class LogViewController: UIViewController, UITableViewDataSource, UITableViewDel
                 if ext == ".m4a" {
                     audioList.append(url)
                 } else if ext == ".txt" {
-                    speedList.append(url)
+                    dataSource.append(url)
                 }
             }
         }
@@ -92,6 +125,7 @@ class LogViewController: UIViewController, UITableViewDataSource, UITableViewDel
             audioPlayer = try AVAudioPlayer(contentsOf: url)
             audioPlayer.prepareToPlay()
             audioPlayer.volume = 10.0
+            setSliderValue()
         } catch {
             print(error)
         }
@@ -103,10 +137,20 @@ class LogViewController: UIViewController, UITableViewDataSource, UITableViewDel
     }
     
     @objc func updateSlider(){
-        
+        let duration = audioPlayer.duration
+        let currentTime = audioPlayer.currentTime
+        let label: TimeInterval = currentTime - duration
         sliderOutlet.value = Float(audioPlayer.currentTime)
-        print(sliderOutlet.value)
+
+        timeStamp.text = label.format(using: [.minute, .second])
     }
+    
+    // MARK: - Audio Delegate
+    
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool) {
+        playButton.setTitle("Play", for: .normal)
+    }
+    
     
     // MARK: - Table view data source
     
@@ -127,10 +171,18 @@ class LogViewController: UIViewController, UITableViewDataSource, UITableViewDel
         if dataSource.count <= 0 {
             cell.textLabel?.text = "There are no logs"
         } else {
-            let pathUrl = dataSource[indexPath.row]
-            let fileName = pathUrl.lastPathComponent
-            cell.textLabel?.text = fileName
-            cell.textLabel?.textColor = .white
+            if segmentOutlet.selectedSegmentIndex == 0 {
+                let log = speedList[indexPath.row]
+                cell.textLabel?.text = log
+                cell.textLabel?.textColor = .white
+            } else if segmentOutlet.selectedSegmentIndex == 1 {
+                let pathUrl = dataSource[indexPath.row]
+                let fileName = pathUrl.lastPathComponent
+                cell.textLabel?.text = fileName
+                cell.textLabel?.textColor = .white
+            } else if segmentOutlet.selectedSegmentIndex == 2 {
+                
+            }
         }
         
         return cell
@@ -140,8 +192,24 @@ class LogViewController: UIViewController, UITableViewDataSource, UITableViewDel
         let log = dataSource[indexPath.row]
         if segmentOutlet.selectedSegmentIndex == 1 {
             setupAudioPlayer(url: log)
+            playerView.isHidden = false
             audioPlayer.play()
+            if audioPlayer.isPlaying {
+                playButton.setTitle("Pause", for: .normal)
+            } else {
+                playButton.setTitle("Play", for: .normal)
+            }
         }
     }
 
 }
+
+extension TimeInterval {
+    func format(using units: NSCalendar.Unit) -> String? {
+        let formatter = DateComponentsFormatter()
+        formatter.allowedUnits = units
+        formatter.unitsStyle = .abbreviated
+        formatter.zeroFormattingBehavior = .pad
+        
+        return formatter.string(from: self)
+    }}

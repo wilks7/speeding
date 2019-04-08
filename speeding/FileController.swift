@@ -10,6 +10,8 @@ import Foundation
 
 class FileController {
     
+    static var speedLogs: [String] = []
+    
     static func getDocumentsDirectory() -> URL {
         
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
@@ -67,6 +69,7 @@ class FileController {
             let url = FileController.getFileURL("log.txt")
             let stringSpace = logString + "\n"
             //let data = stringSpace.data(using: String.Encoding.utf8)!
+            speedLogs.append(stringSpace)
             try stringSpace.appendToURL(url)
         } catch {
             print("ERROR: could not write to log file")

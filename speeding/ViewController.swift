@@ -16,7 +16,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     var audioPlayer: AVAudioPlayer!
     var locationManager = CLLocationManager()
 
-    var fileName = "recording.m4a"
+    var fileName = "placeholder.m4a"
     
     var recording: Bool = false
     var redText: Bool = false
@@ -57,6 +57,59 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         //shareLog()
     }
     
+    @objc func doubleTapped() {
+        
+    }
+    
+    @objc func tapped() {
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM.dd.yyyy-hh:mm:ss"
+        fileName = formatter.string(from: Date()) + ".m4a"
+        
+        let audioFilename = FileController.getDocumentsDirectory().appendingPathComponent(fileName)
+        
+        let maxSettings = [//filename should be .caf
+            AVFormatIDKey: kAudioFormatAppleLossless,
+            AVEncoderAudioQualityKey : AVAudioQuality.max.rawValue,
+            AVEncoderBitRateKey : 320000,
+            AVNumberOfChannelsKey: 2 as NSNumber,
+            AVSampleRateKey : 44100.0
+            ] as [String:Any]
+        
+        let smallSettings = [//filename should be .m4a
+            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+            AVSampleRateKey: 12000.0,
+            AVNumberOfChannelsKey: 1 as NSNumber,
+            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+            ] as [String : Any]
+        
+        do {
+            audioRecorder = try AVAudioRecorder(url: audioFilename, settings: maxSettings)
+            audioRecorder.delegate = self
+            audioRecorder.prepareToRecord()
+        } catch {
+            print(error)
+        }
+        
+        if !recording {
+            audioRecorder.record()
+            
+            if redText {
+                speedLabel.textColor = UIColor.red
+                mphTextLabel.textColor = UIColor.red
+            } else {
+                redDotOutlet.isHidden = false
+            }
+            print("...recording...")
+            
+            self.recording = true
+        }
+        else {
+            audioRecorder.stop()
+            self.recording = false
+        }
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         FileController.checkFile("log.txt")
@@ -64,6 +117,15 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         setupLocationManager()
         //setupRecorder()
         UIApplication.shared.isIdleTimerDisabled = true
+        
+        let doubleTap = UITapGestureRecognizer(target: self, action: #selector(doubleTapped))
+        doubleTap.numberOfTapsRequired = 2
+        view.addGestureRecognizer(doubleTap)
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(tapped))
+        tap.numberOfTapsRequired = 1
+        view.addGestureRecognizer(tap)
+        
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -90,7 +152,7 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
     
     func setupButtons(){
         buttonLabel.isHidden = true
-        //playButtonLabel.isHidden = true
+        playButtonLabel.isHidden = true
         redDotOutlet.isHidden = true
         speedLabel.font = UIFont(name: "DBLCDTempBlack", size: 150.0)
         
@@ -144,56 +206,57 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         
     }
     
-    
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        
-        let formatter = DateFormatter()
-        formatter.dateFormat = "MM.dd.yyyy-hh:mm:ss"
-        fileName = formatter.string(from: Date()) + ".m4a"
-        
-        let audioFilename = FileController.getDocumentsDirectory().appendingPathComponent(fileName)
-        
-        //        let maxSettings = [//filename should be .caf
-        //            AVFormatIDKey: kAudioFormatAppleLossless,
-        //            AVEncoderAudioQualityKey : AVAudioQuality.max.rawValue,
-        //            AVEncoderBitRateKey : 320000,
-        //            AVNumberOfChannelsKey: 2 as NSNumber,
-        //            AVSampleRateKey : 44100.0
-        //            ] as [String:Any]
-        
-        let smallSettings = [//filename should be .m4a
-            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
-            AVSampleRateKey: 12000.0,
-            AVNumberOfChannelsKey: 1 as NSNumber,
-            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
-            ] as [String : Any]
-        
-        do {
-            audioRecorder = try AVAudioRecorder(url: audioFilename, settings: smallSettings)
-            audioRecorder.delegate = self
-            audioRecorder.prepareToRecord()
-        } catch {
-            print(error)
-        }
-        
-        if !recording {
-            audioRecorder.record()
-            
-            if redText {
-                speedLabel.textColor = UIColor.red
-                mphTextLabel.textColor = UIColor.red
-            } else {
-                redDotOutlet.isHidden = false
-            }
-            print("...recording...")
-            
-            self.recording = true
-        }
-        else {
-            audioRecorder.stop()
-            self.recording = false
-        }
-    }
+//
+//    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+//
+//
+//        let formatter = DateFormatter()
+//        formatter.dateFormat = "MM.dd.yyyy-hh:mm:ss"
+//        fileName = formatter.string(from: Date()) + ".m4a"
+//
+//        let audioFilename = FileController.getDocumentsDirectory().appendingPathComponent(fileName)
+//
+//        let maxSettings = [//filename should be .caf
+//            AVFormatIDKey: kAudioFormatAppleLossless,
+//            AVEncoderAudioQualityKey : AVAudioQuality.max.rawValue,
+//            AVEncoderBitRateKey : 320000,
+//            AVNumberOfChannelsKey: 2 as NSNumber,
+//            AVSampleRateKey : 44100.0
+//            ] as [String:Any]
+//
+//        let smallSettings = [//filename should be .m4a
+//            AVFormatIDKey: Int(kAudioFormatMPEG4AAC),
+//            AVSampleRateKey: 12000.0,
+//            AVNumberOfChannelsKey: 1 as NSNumber,
+//            AVEncoderAudioQualityKey: AVAudioQuality.high.rawValue
+//            ] as [String : Any]
+//
+//        do {
+//            audioRecorder = try AVAudioRecorder(url: audioFilename, settings: maxSettings)
+//            audioRecorder.delegate = self
+//            audioRecorder.prepareToRecord()
+//        } catch {
+//            print(error)
+//        }
+//
+//        if !recording {
+//            audioRecorder.record()
+//
+//            if redText {
+//                speedLabel.textColor = UIColor.red
+//                mphTextLabel.textColor = UIColor.red
+//            } else {
+//                redDotOutlet.isHidden = false
+//            }
+//            print("...recording...")
+//
+//            self.recording = true
+//        }
+//        else {
+//            audioRecorder.stop()
+//            self.recording = false
+//        }
+//    }
 
 
     func shareLog(){
@@ -219,13 +282,13 @@ class ViewController: UIViewController, AVAudioRecorderDelegate, AVAudioPlayerDe
         print("ended recording")
         
     
-        let alert = UIAlertController(title: "Succesfully Recorded!", message: "Every new audio recording overwrites the last, to ensure the recording you want is not overwritten we recommend sending a copy now, would you like to send yourself a copy?", preferredStyle: .alert)
-        let yesButton = UIAlertAction(title: "Yes", style: .default) { (action) in
-            self.shareLog()
-        }
-        let noButton = UIAlertAction(title: "No", style: .default, handler: nil)
+        let alert = UIAlertController(title: "Succesfully Recorded!", message: "Tap the share button in the top left to send yourself an email or record onto the blockchain", preferredStyle: .alert)
+//        let yesButton = UIAlertAction(title: "Yes", style: .default) { (action) in
+//            self.shareLog()
+//        }
+        let noButton = UIAlertAction(title: "OK", style: .default, handler: nil)
         alert.addAction(noButton)
-        alert.addAction(yesButton)
+        //alert.addAction(yesButton)
         present(alert, animated: true, completion: nil)
             
     }
