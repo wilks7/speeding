@@ -1,34 +1,50 @@
 //
-//  LogTableViewController.swift
+//  LogViewController.swift
 //  speeding
 //
-//  Created by hackintosh on 4/7/19.
+//  Created by Michael Wilkowski on 4/8/19.
 //  Copyright © 2019 wilksmac. All rights reserved.
 //
 
 import UIKit
+import AVFoundation
 
-class LogTableViewController: UITableViewController {
+class LogViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
 
-    
     @IBAction func shareTapped(_ sender: Any) {
     }
     
-    @IBAction func doneTapped(_ sender: Any) {
-    }
-    
     @IBAction func segmentChanged(_ sender: Any) {
+        
         if segmentOutlet.selectedSegmentIndex == 0 {
             dataSource = speedList
         } else if segmentOutlet.selectedSegmentIndex == 1 {
             dataSource = audioList
+            setupAudioPlayer(url: dataSource[0])
+            setSliderValue()
+            _ = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateSlider), userInfo: nil, repeats: true)
+
         }
         tableView.reloadData()
-
     }
-
+    
+    @IBAction func sliderChanged(_ sender: Any) {
+        
+        audioPlayer.stop()
+        audioPlayer.currentTime = TimeInterval(sliderOutlet.value)
+        audioPlayer.prepareToPlay()
+        audioPlayer.play()
+        
+    }
+    
+    
+    @IBOutlet weak var sliderOutlet: UISlider!
+    
     @IBOutlet weak var segmentOutlet: UISegmentedControl!
     
+    @IBOutlet weak var tableView: UITableView!
+    
+    var audioPlayer: AVAudioPlayer!
     
     var dataSource:[URL] = []
     
@@ -43,7 +59,13 @@ class LogTableViewController: UITableViewController {
             dataSource = speedList
         } else if segmentOutlet.selectedSegmentIndex == 1 {
             dataSource = audioList
+            setupAudioPlayer(url: dataSource[0])
+            _ = Timer.scheduledTimer(timeInterval: 0.01, target: self, selector: #selector(updateSlider), userInfo: nil, repeats: true)
         }
+        
+        
+
+
         tableView.reloadData()
     }
     
@@ -62,11 +84,34 @@ class LogTableViewController: UITableViewController {
             }
         }
     }
-
+    
+    
+    func setupAudioPlayer(url: URL){
+        
+        do {
+            audioPlayer = try AVAudioPlayer(contentsOf: url)
+            audioPlayer.prepareToPlay()
+            audioPlayer.volume = 10.0
+        } catch {
+            print(error)
+        }
+    }
+    
+    
+    func setSliderValue(){
+        sliderOutlet.maximumValue = Float(audioPlayer.duration)
+    }
+    
+    @objc func updateSlider(){
+        
+        sliderOutlet.value = Float(audioPlayer.currentTime)
+        print(sliderOutlet.value)
+    }
+    
     // MARK: - Table view data source
-
-
-    override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
         if dataSource.count <= 0 {
             return 1
@@ -74,11 +119,11 @@ class LogTableViewController: UITableViewController {
             return dataSource.count
         }
     }
-
-
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+    
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "logIdentifier", for: indexPath)
-
+        
         if dataSource.count <= 0 {
             cell.textLabel?.text = "There are no logs"
         } else {
@@ -87,54 +132,16 @@ class LogTableViewController: UITableViewController {
             cell.textLabel?.text = fileName
             cell.textLabel?.textColor = .white
         }
-
+        
         return cell
     }
- 
- 
-    /*
-    // Override to support conditional editing of the table view.
-    override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the specified item to be editable.
-        return true
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let log = dataSource[indexPath.row]
+        if segmentOutlet.selectedSegmentIndex == 1 {
+            setupAudioPlayer(url: log)
+            audioPlayer.play()
+        }
     }
-    */
-
-    /*
-    // Override to support editing the table view.
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if editingStyle == .delete {
-            // Delete the row from the data source
-            tableView.deleteRows(at: [indexPath], with: .fade)
-        } else if editingStyle == .insert {
-            // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-        }    
-    }
-    */
-
-    /*
-    // Override to support rearranging the table view.
-    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
-
-    }
-    */
-
-    /*
-    // Override to support conditional rearranging of the table view.
-    override func tableView(_ tableView: UITableView, canMoveRowAt indexPath: IndexPath) -> Bool {
-        // Return false if you do not want the item to be re-orderable.
-        return true
-    }
-    */
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

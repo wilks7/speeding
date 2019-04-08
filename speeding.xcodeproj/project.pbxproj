@@ -15,6 +15,7 @@
 		177085A01CEA4B9C00C189F8 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1770859F1CEA4B9C00C189F8 /* Assets.xcassets */; };
 		177085A31CEA4B9C00C189F8 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 177085A11CEA4B9C00C189F8 /* LaunchScreen.storyboard */; };
 		1F2E3EE61D8DE89700E26000 /* Watch Extension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 1F2E3EE51D8DE89700E26000 /* Watch Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		4C62C5D0225B218500464198 /* LogViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C62C5CF225B218500464198 /* LogViewController.swift */; };
 		D676C04A225A81A2007AFB96 /* NetworkController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D676C049225A81A2007AFB96 /* NetworkController.swift */; };
 		D676C04E225A8F11007AFB96 /* FileController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D676C04D225A8F11007AFB96 /* FileController.swift */; };
 		D676C050225AA107007AFB96 /* LogTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D676C04F225AA107007AFB96 /* LogTableViewController.swift */; };
@@ -66,6 +67,7 @@
 		177085A41CEA4B9C00C189F8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1F2E3ED91D8DE89700E26000 /* Watch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Watch.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1F2E3EE51D8DE89700E26000 /* Watch Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Watch Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4C62C5CF225B218500464198 /* LogViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogViewController.swift; sourceTree = "<group>"; };
 		D676C049225A81A2007AFB96 /* NetworkController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkController.swift; sourceTree = "<group>"; };
 		D676C04D225A8F11007AFB96 /* FileController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileController.swift; sourceTree = "<group>"; };
 		D676C04F225AA107007AFB96 /* LogTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogTableViewController.swift; sourceTree = "<group>"; };
@@ -113,6 +115,7 @@
 				1770859A1CEA4B9C00C189F8 /* ViewController.swift */,
 				D676C04D225A8F11007AFB96 /* FileController.swift */,
 				1770859C1CEA4B9C00C189F8 /* Main.storyboard */,
+				4C62C5CF225B218500464198 /* LogViewController.swift */,
 				D676C04F225AA107007AFB96 /* LogTableViewController.swift */,
 				17694E3D1CF0FD2100BAD615 /* questions.swift */,
 				17694E3B1CF0D89F00BAD615 /* SettingsTableViewController.swift */,
@@ -266,6 +269,7 @@
 				D676C04A225A81A2007AFB96 /* NetworkController.swift in Sources */,
 				17694E3C1CF0D89F00BAD615 /* SettingsTableViewController.swift in Sources */,
 				17694E3E1CF0FD2100BAD615 /* questions.swift in Sources */,
+				4C62C5D0225B218500464198 /* LogViewController.swift in Sources */,
 				D676C050225AA107007AFB96 /* LogTableViewController.swift in Sources */,
 				D676C04E225A8F11007AFB96 /* FileController.swift in Sources */,
 				1770859B1CEA4B9C00C189F8 /* ViewController.swift in Sources */,
